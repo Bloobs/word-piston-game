@@ -71,6 +71,7 @@ export function WordGame() {
           word={state.lastValidWord}
           points={state.lastWordPoints}
           definition={state.lastWordDefinition}
+          language={state.language}
         />
       </AnimatePresence>
 
