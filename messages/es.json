@@ -1,0 +1,51 @@
+{
+  "startScreen": {
+    "titleMain": "Palabra",
+    "titleAccent": "Master",
+    "subtitle": "Forma palabras con las letras del tablero",
+    "languagePlaceholder": "Idioma",
+    "languageSpanish": "Español",
+    "languageEnglish": "Inglés",
+    "countryPlaceholder": "País",
+    "countrySpain": "España",
+    "countryMexico": "México",
+    "countryArgentina": "Argentina",
+    "countryColombia": "Colombia",
+    "countryChile": "Chile",
+    "newGame": "Nueva Partida",
+    "loadingDictionary": "Cargando diccionario...",
+    "globalTop": "Top 25 Global"
+  },
+  "score": {
+    "partial": "Parcial",
+    "total": "Total"
+  },
+  "controls": {
+    "giveUp": "Me rindo",
+    "hint": "Pista",
+    "submit": "Acumular"
+  },
+  "wordZone": {
+    "emptyHint": "Toca las letras superiores para formar palabras"
+  },
+  "resultDialog": {
+    "title": "Excelente",
+    "ariaDescription": "Resultado de la palabra",
+    "pointsEarned": "Puntos obtenidos",
+    "searchingDefinition": "Buscando definición...",
+    "continue": "Continuar",
+    "bonusLabel": "+Bonus",
+    "definitionNotFound": "No se encontró el significado.",
+    "offlineError": "Sin conexión. No se ha podido consultar la definición.",
+    "sourcePrefix": "Fuente:"
+  },
+  "gameOver": {
+    "title": "Fin de Partida",
+    "finalScore": "Puntuación Final",
+    "ok": "OK",
+    "newRecordMessage": "¡Nuevo récord! Has entrado en la posición",
+    "nicknamePlaceholder": "Escribe tu nickname",
+    "saveRecord": "Guardar en ranking",
+    "recordSaved": "Récord guardado correctamente."
+  }
+}

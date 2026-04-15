@@ -3,14 +3,17 @@
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion"
 import { LetterTile } from "./letter-tile"
 import type { Letter } from "@/hooks/use-word-game"
+import { useTranslations } from "@/hooks/use-translations"
 
 interface WordZoneProps {
   letters: Letter[]
   onReturnLastLetter: () => void
   isValid: boolean
+  language: "es" | "en"
 }
 
-export function WordZone({ letters, onReturnLastLetter, isValid }: WordZoneProps) {
+export function WordZone({ letters, onReturnLastLetter, isValid, language }: WordZoneProps) {
+  const t = useTranslations(language)
 
   return (
     <div
@@ -29,7 +32,7 @@ export function WordZone({ letters, onReturnLastLetter, isValid }: WordZoneProps
                 animate={{ opacity: 0.5 }}
                 className="text-sm text-muted-foreground"
               >
-                Toca las letras superiores para formar palabras
+                {t.wordZone.emptyHint}
               </motion.span>
             ) : (
               letters.map((letter) => (

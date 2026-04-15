@@ -1,0 +1,51 @@
+{
+  "startScreen": {
+    "titleMain": "Word",
+    "titleAccent": "Master",
+    "subtitle": "Build words from the board letters",
+    "languagePlaceholder": "Language",
+    "languageSpanish": "Spanish",
+    "languageEnglish": "English",
+    "countryPlaceholder": "Country",
+    "countrySpain": "Spain",
+    "countryMexico": "Mexico",
+    "countryArgentina": "Argentina",
+    "countryColombia": "Colombia",
+    "countryChile": "Chile",
+    "newGame": "New Game",
+    "loadingDictionary": "Loading dictionary...",
+    "globalTop": "Global Top 25"
+  },
+  "score": {
+    "partial": "Partial",
+    "total": "Total"
+  },
+  "controls": {
+    "giveUp": "Give up",
+    "hint": "Hint",
+    "submit": "Submit"
+  },
+  "wordZone": {
+    "emptyHint": "Tap the top letters to build words"
+  },
+  "resultDialog": {
+    "title": "Excellent",
+    "ariaDescription": "Word result",
+    "pointsEarned": "Points earned",
+    "searchingDefinition": "Searching meaning...",
+    "continue": "Continue",
+    "bonusLabel": "+Bonus",
+    "definitionNotFound": "Meaning not found.",
+    "offlineError": "Offline. Meaning could not be fetched.",
+    "sourcePrefix": "Source:"
+  },
+  "gameOver": {
+    "title": "Game Over",
+    "finalScore": "Final Score",
+    "ok": "OK",
+    "newRecordMessage": "New high score! You reached position",
+    "nicknamePlaceholder": "Type your nickname",
+    "saveRecord": "Save to ranking",
+    "recordSaved": "Score saved successfully."
+  }
+}

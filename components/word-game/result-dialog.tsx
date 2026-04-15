@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { Sparkles, BookOpen } from "lucide-react"
+import { useTranslations } from "@/hooks/use-translations"
 
 interface ResultDialogProps {
   isOpen: boolean
@@ -38,9 +39,11 @@ export function ResultDialog({
   definition,
   language,
 }: ResultDialogProps) {
+  const t = useTranslations(language)
   const [isLoadingDefinition, setIsLoadingDefinition] = useState(false)
   const [definitionText, setDefinitionText] = useState<string | null>(null)
   const [definitionError, setDefinitionError] = useState<string | null>(null)
+  const [definitionSource, setDefinitionSource] = useState<string | null>(null)
   const hasBonusCelebration = bonusPoints > 0
   const isEpicBonus = bonusPoints >= 25
   const starCount = isEpicBonus ? 14 : 9
@@ -50,20 +53,15 @@ export function ResultDialog({
       setIsLoadingDefinition(false)
       setDefinitionText(null)
       setDefinitionError(null)
-      return
-    }
-
-    if (language !== "es") {
-      setIsLoadingDefinition(false)
-      setDefinitionText(definition)
-      setDefinitionError(null)
+      setDefinitionSource(null)
       return
     }
 
     if (!navigator.onLine) {
       setIsLoadingDefinition(false)
       setDefinitionText(null)
-      setDefinitionError("Sin conexión. No se ha podido consultar la definición.")
+      setDefinitionError(t.resultDialog.offlineError)
+      setDefinitionSource(null)
       return
     }
 
@@ -73,25 +71,30 @@ export function ResultDialog({
       setIsLoadingDefinition(true)
       setDefinitionText(null)
       setDefinitionError(null)
+      setDefinitionSource(null)
 
       try {
-        const response = await fetch(`/api/rae?word=${encodeURIComponent(word)}`)
-        const data: { ok?: boolean; definition?: string; error?: string } = await response.json()
+        const endpoint = language === "es" ? "/api/rae" : "/api/dictionary-en"
+        const response = await fetch(`${endpoint}?word=${encodeURIComponent(word)}`)
+        const data: { ok?: boolean; definition?: string; error?: string; source?: string } = await response.json()
 
         if (isCancelled) return
 
         if (data.ok && isUsableDefinition(data.definition)) {
           setDefinitionText(data.definition.trim())
           setDefinitionError(null)
+          setDefinitionSource(data.source?.trim() || null)
           return
         }
 
         setDefinitionText(null)
-        setDefinitionError(data.error || "No se encontró el significado.")
+        setDefinitionError(data.error || t.resultDialog.definitionNotFound)
+        setDefinitionSource(null)
       } catch {
         if (isCancelled) return
         setDefinitionText(null)
-        setDefinitionError("No se encontró el significado.")
+        setDefinitionError(t.resultDialog.definitionNotFound)
+        setDefinitionSource(null)
       } finally {
         if (!isCancelled) {
           setIsLoadingDefinition(false)
@@ -104,7 +107,7 @@ export function ResultDialog({
     return () => {
       isCancelled = true
     }
-  }, [isOpen, word, language, definition])
+  }, [isOpen, word, language, definition, t.resultDialog.definitionNotFound, t.resultDialog.offlineError])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -112,10 +115,10 @@ export function ResultDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center justify-center gap-2 text-2xl">
             <Sparkles className="h-6 w-6 text-yellow-500" />
-            <span>Excelente</span>
+            <span>{t.resultDialog.title}</span>
           </DialogTitle>
           <DialogDescription className="sr-only">
-            Resultado de la palabra
+            {t.resultDialog.ariaDescription}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center gap-4 py-4">
@@ -135,7 +138,7 @@ export function ResultDialog({
             transition={{ delay: 0.2 }}
             className="text-center"
           >
-            <p className="text-sm text-muted-foreground">Puntos obtenidos</p>
+            <p className="text-sm text-muted-foreground">{t.resultDialog.pointsEarned}</p>
             <p className="text-4xl font-bold text-accent">+{points}</p>
           </motion.div>
 
@@ -182,7 +185,7 @@ export function ResultDialog({
                 transition={{ delay: 0.35, duration: 0.5 }}
                 className="relative z-10 text-2xl font-extrabold text-yellow-500"
               >
-                +Bonus +{bonusPoints}
+                {t.resultDialog.bonusLabel} +{bonusPoints}
               </motion.p>
             </motion.div>
           )}
@@ -194,7 +197,7 @@ export function ResultDialog({
               transition={{ delay: 0.4 }}
               className="w-full rounded-lg border border-border/50 bg-muted/30 p-4 text-sm text-muted-foreground"
             >
-              Buscando definición...
+              {t.resultDialog.searchingDefinition}
             </motion.div>
           )}
 
@@ -209,9 +212,9 @@ export function ResultDialog({
                 <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">{definitionText}</p>
               </div>
-              {language === "es" && (
+              {definitionSource && (
                 <p className="mt-2 text-xs italic text-muted-foreground">
-                  Significado obtenido de la web de la RAE.
+                  {t.resultDialog.sourcePrefix} {definitionSource}
                 </p>
               )}
             </motion.div>
@@ -229,7 +232,7 @@ export function ResultDialog({
           )}
 
           <Button onClick={onClose} className="mt-2 w-full">
-            Continuar
+            {t.resultDialog.continue}
           </Button>
         </div>
       </DialogContent>

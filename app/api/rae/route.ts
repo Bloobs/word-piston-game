@@ -2,6 +2,17 @@ import { NextResponse } from "next/server"
 
 const NOT_FOUND_MESSAGE = "No se encontró el significado."
 
+function normalizeGameWord(value: string): string {
+  const placeholder = "__enie__"
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/ñ/g, placeholder)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(new RegExp(placeholder, "g"), "ñ")
+}
+
 function isDefinitionCandidate(value: string, word: string): boolean {
   const normalized = value.trim()
   if (normalized.length < 5) return false
@@ -67,6 +78,22 @@ function getFirstDefinition(value: unknown, word: string): string | null {
   return null
 }
 
+async function fetchRaePayload(word: string): Promise<{ ok: boolean; payload: unknown | null }> {
+  const response = await fetch(`https://rae-api.com/api/words/${encodeURIComponent(word)}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.RAE_API_KEY ?? ""}`,
+    },
+    cache: "no-store",
+  })
+
+  try {
+    const payload = (await response.json()) as unknown
+    return { ok: response.ok, payload }
+  } catch {
+    return { ok: response.ok, payload: null }
+  }
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const rawWord = url.searchParams.get("word")
@@ -77,19 +104,26 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await fetch(`https://rae-api.com/api/words/${encodeURIComponent(word)}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.RAE_API_KEY ?? ""}`,
-      },
-      cache: "no-store",
-    })
+    const firstLookup = await fetchRaePayload(word)
+    let payload = firstLookup.payload
+    let extractedDefinition = getFirstDefinition(payload, word)
 
-    if (!response.ok) {
-      return NextResponse.json({ ok: false, error: NOT_FOUND_MESSAGE })
+    if (!firstLookup.ok || !extractedDefinition) {
+      const suggestions = payload && typeof payload === "object" && Array.isArray((payload as Record<string, unknown>).suggestions)
+        ? (payload as Record<string, unknown>).suggestions.filter((entry): entry is string => typeof entry === "string")
+        : []
+
+      const expectedWord = normalizeGameWord(word)
+      const equivalentSuggestion = suggestions.find((suggestion) => {
+        return normalizeGameWord(suggestion) === expectedWord
+      })
+
+      if (equivalentSuggestion) {
+        const suggestionLookup = await fetchRaePayload(equivalentSuggestion)
+        payload = suggestionLookup.payload
+        extractedDefinition = getFirstDefinition(payload, equivalentSuggestion)
+      }
     }
-
-    const payload: unknown = await response.json()
-    const extractedDefinition = getFirstDefinition(payload, word)
 
     if (!extractedDefinition) {
       return NextResponse.json({ ok: false, error: NOT_FOUND_MESSAGE })
