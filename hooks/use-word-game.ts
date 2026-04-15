@@ -102,6 +102,7 @@ export interface GameState {
   hintLetters: string[]
   lastValidWord: string | null
   lastWordPoints: number
+  lastWordBonus: number
   lastWordDefinition: string | null
   showResultDialog: boolean
   language: "es" | "en"
@@ -207,8 +208,8 @@ function getDefinition(word: string): string {
 }
 
 function calculateBonus(wordLength: number): number {
-  if (wordLength >= 9) return 50
-  if (wordLength >= 8) return 25
+  if (wordLength >= 9) return 25
+  if (wordLength >= 8) return 15
   if (wordLength >= 7) return 10
   if (wordLength >= 6) return 5
   return 0
@@ -272,6 +273,7 @@ export function useWordGame() {
     hintLetters: [],
     lastValidWord: null,
     lastWordPoints: 0,
+    lastWordBonus: 0,
     lastWordDefinition: null,
     showResultDialog: false,
     language: "es",
@@ -304,6 +306,7 @@ export function useWordGame() {
       hintLetters: [],
       lastValidWord: null,
       lastWordPoints: 0,
+      lastWordBonus: 0,
       lastWordDefinition: null,
       showResultDialog: false,
       language,
@@ -430,6 +433,7 @@ export function useWordGame() {
         totalScore: newTotalScore,
         lastValidWord: word,
         lastWordPoints: wordPoints,
+        lastWordBonus: bonus,
         lastWordDefinition: definition,
         showResultDialog: true,
         gameOver: boardCleared || noMoreMoves,
@@ -480,6 +484,7 @@ export function useWordGame() {
       hintLetters: [],
       lastValidWord: null,
       lastWordPoints: 0,
+      lastWordBonus: 0,
       lastWordDefinition: null,
       showResultDialog: false,
       language: prev.language,

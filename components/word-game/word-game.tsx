@@ -70,6 +70,7 @@ export function WordGame() {
           onClose={actions.closeResultDialog}
           word={state.lastValidWord}
           points={state.lastWordPoints}
+          bonusPoints={state.lastWordBonus}
           definition={state.lastWordDefinition}
           language={state.language}
         />

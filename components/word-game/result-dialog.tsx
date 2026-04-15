@@ -17,6 +17,7 @@ interface ResultDialogProps {
   onClose: () => void
   word: string | null
   points: number
+  bonusPoints: number
   definition: string | null
   language: "es" | "en"
 }
@@ -33,12 +34,16 @@ export function ResultDialog({
   onClose,
   word,
   points,
+  bonusPoints,
   definition,
   language,
 }: ResultDialogProps) {
   const [isLoadingDefinition, setIsLoadingDefinition] = useState(false)
   const [definitionText, setDefinitionText] = useState<string | null>(null)
   const [definitionError, setDefinitionError] = useState<string | null>(null)
+  const hasBonusCelebration = bonusPoints > 0
+  const isEpicBonus = bonusPoints >= 25
+  const starCount = isEpicBonus ? 14 : 9
 
   useEffect(() => {
     if (!isOpen || !word) {
@@ -133,6 +138,54 @@ export function ResultDialog({
             <p className="text-sm text-muted-foreground">Puntos obtenidos</p>
             <p className="text-4xl font-bold text-accent">+{points}</p>
           </motion.div>
+
+          {hasBonusCelebration && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              className="relative w-full overflow-hidden rounded-xl border border-yellow-400/40 bg-yellow-400/10 px-4 py-4 text-center"
+            >
+              {Array.from({ length: starCount }).map((_, index) => {
+                const left = (index * 31) % 100
+                const duration = 0.9 + (index % 4) * 0.2
+                const delay = 0.08 * index
+                const sizeClass = isEpicBonus
+                  ? index % 3 === 0
+                    ? "h-6 w-6"
+                    : "h-5 w-5"
+                  : index % 3 === 0
+                    ? "h-5 w-5"
+                    : "h-4 w-4"
+
+                return (
+                  <motion.div
+                    key={`bonus-star-${index}`}
+                    initial={{ opacity: 0, scale: 0.2, y: 14 }}
+                    animate={{ opacity: [0, 1, 0], scale: [0.2, 1.2, 0.4], y: [14, -18, -30] }}
+                    transition={{
+                      duration,
+                      delay,
+                      ease: "easeOut",
+                    }}
+                    className="pointer-events-none absolute bottom-3"
+                    style={{ left: `${left}%` }}
+                  >
+                    <Sparkles className={`${sizeClass} text-yellow-500`} />
+                  </motion.div>
+                )
+              })}
+
+              <motion.p
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: [0.85, 1.06, 1] }}
+                transition={{ delay: 0.35, duration: 0.5 }}
+                className="relative z-10 text-2xl font-extrabold text-yellow-500"
+              >
+                +Bonus +{bonusPoints}
+              </motion.p>
+            </motion.div>
+          )}
 
           {isLoadingDefinition && (
             <motion.div
