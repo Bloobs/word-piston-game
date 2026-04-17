@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import Script from "next/script"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
@@ -7,10 +7,28 @@ import "./globals.css"
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
+// Configuración específica para dispositivos móviles y PWA
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // Evita el zoom pellizcando la pantalla para dar sensación de App nativa
+}
+
 export const metadata: Metadata = {
   title: "PalabraMaster - Juego de Palabras",
   description: "Forma palabras con las letras del tablero y acumula puntos",
   generator: "v0.app",
+  manifest: "/manifest.json", // Enlace al manifest para la PWA
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "PalabraMaster",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   other: {
     "google-adsense-account": "ca-pub-8772151413997813"
   },
@@ -39,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-background" suppressHydrationWarning>
+    <html lang="es" className="bg-background" suppressHydrationWarning>
       <head>
         {/* Aquí NO van los scripts en Next.js */}
       </head>
