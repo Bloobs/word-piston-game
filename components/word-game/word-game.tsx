@@ -60,9 +60,23 @@ function getCountryFromBrowserLocale(): string {
   return "US"
 }
 
+type AdBreakBeforeRewardFn = (showAdFn: () => void) => void
+
+type AdBreakOptions = {
+  type: "rewarded"
+  name?: string
+  beforeReward?: AdBreakBeforeRewardFn
+  adViewed?: () => void
+  adDismissed?: () => void
+  adBreakDone?: () => void
+  adBreakEmpty?: () => void
+}
+
 declare global {
   interface Window {
     adsbygoogle?: unknown[]
+    adBreak?: (options: AdBreakOptions) => void
+    adConfig?: (options: Record<string, unknown>) => void
   }
 }
 
@@ -120,7 +134,6 @@ export function WordGame() {
   }
 
   const handleHintRequest = () => {
-    // Ya no comprobamos los 25 puntos
     if (isProcessingHintAd) return
     setIsHintModalOpen(true)
   }
@@ -130,30 +143,76 @@ export function WordGame() {
     setIsHintModalOpen(false)
   }
 
-  const showRewardedAd = async () => {
-    if (typeof window !== "undefined") {
-      try {
-        window.adsbygoogle = window.adsbygoogle || []
-      } catch {
-        // ignore
-      }
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 1800))
+  const grantHint = () => {
+    setIsHintModalOpen(false)
+    actions.useHint()
   }
 
-  const handleWatchAd = async () => {
+  const handleWatchAd = () => {
+    if (isProcessingHintAd) return
     setIsProcessingHintAd(true)
 
-    try {
-      await showRewardedAd()
-      setIsHintModalOpen(false)
-      // Usamos la pista pero ya sin coste de puntos
-      // Si tu hook useWordGame internamente restaba 25, idealmente deberías quitarlo allí también.
-      // Pero si no quieres tocar el hook ahora, al menos la validación visual y de uso está libre aquí.
-      actions.useHint()
-    } finally {
+    // Nuestro "seguro de vida": si en 2.5 segundos AdSense no ha hecho nada 
+    // (ni ha mostrado anuncio ni ha dado error), forzamos la pista.
+    // Esto salva los bloqueos en localhost o con AdBlockers muy agresivos.
+    let adTimeout: NodeJS.Timeout | null = setTimeout(() => {
+      console.warn("AdSense no respondió a tiempo. Entregando pista de emergencia.")
+      safeGrantHint()
+    }, 2500)
+
+    let finished = false
+
+    const safeGrantHint = () => {
+      if (finished) return
+      finished = true
+      if (adTimeout) clearTimeout(adTimeout)
+      grantHint()
       setIsProcessingHintAd(false)
+    }
+
+    const safeStopLoading = () => {
+      if (finished) return
+      if (adTimeout) clearTimeout(adTimeout)
+      setIsProcessingHintAd(false)
+    }
+
+    try {
+      // Si la API no existe directamente en window
+      if (typeof window === "undefined" || typeof window.adBreak !== "function") {
+        safeGrantHint()
+        return
+      }
+
+      window.adBreak({
+        type: "rewarded",
+        name: "hint_reward",
+        beforeReward: (showAdFn) => {
+          // Google responde que tiene un anuncio. Cancelamos el timeout para 
+          // que el usuario pueda verlo tranquilo sin que salte la pista por detrás.
+          if (adTimeout) clearTimeout(adTimeout)
+          showAdFn()
+        },
+        adViewed: () => {
+          // Vio el anuncio entero
+          safeGrantHint()
+        },
+        adDismissed: () => {
+          // Cerró el anuncio a la mitad
+          setIsHintModalOpen(false)
+          safeStopLoading()
+        },
+        adBreakEmpty: () => {
+          // AdSense dice oficialmente "No tengo anuncios para ti hoy"
+          safeGrantHint()
+        },
+        adBreakDone: () => {
+          // Limpieza final de AdSense
+          safeStopLoading()
+        },
+      })
+    } catch (e) {
+      console.error("Error lanzando adBreak:", e)
+      safeGrantHint()
     }
   }
 
@@ -193,7 +252,7 @@ export function WordGame() {
       <div className="shrink-0 py-3">
         <GameControls
           canSubmit={state.wordZone.length >= 3}
-          canUseHint={true} // Ahora siempre se puede pedir pista
+          canUseHint={true}
           onSubmit={actions.submitWord}
           onHint={handleHintRequest}
           onGiveUp={actions.giveUp}
@@ -246,10 +305,8 @@ export function WordGame() {
                     ? "La pista se mostrará después de un breve anuncio. Gracias por apoyar el juego."
                     : "The hint will be shown after a short ad. Thanks for supporting the game."}
                 </p>
-                {/* Eliminado el texto que decía que se descontaban 25 puntos */}
               </div>
 
-              {/* Botones arreglados para no desbordar: flex-col por defecto, botones al 100% de ancho */}
               <div className="mt-6 flex flex-col gap-3">
                 <Button
                   type="button"
@@ -265,7 +322,7 @@ export function WordGame() {
                       ? "Ver anuncio"
                       : "Watch ad"}
                 </Button>
-                
+
                 <Button
                   type="button"
                   variant="outline"

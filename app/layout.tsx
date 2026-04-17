@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Script from "next/script"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
@@ -10,7 +11,6 @@ export const metadata: Metadata = {
   title: "PalabraMaster - Juego de Palabras",
   description: "Forma palabras con las letras del tablero y acumula puntos",
   generator: "v0.app",
-  // Añadimos esto para asegurar la verificación de AdSense por metadatos:
   other: {
     "google-adsense-account": "ca-pub-8772151413997813"
   },
@@ -41,14 +41,34 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-background" suppressHydrationWarning>
       <head>
-        {/* Script nativo de AdSense cargado directamente en el head */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8772151413997813"
-          crossOrigin="anonymous"
-        ></script>
+        {/* Aquí NO van los scripts en Next.js */}
       </head>
       <body className="bg-background font-sans text-foreground antialiased" suppressHydrationWarning>
+        
+        {/* Script principal de AdSense usando next/script antes del contenido */}
+        <Script
+          id="adsense-main"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8772151413997813"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+        
+        {/* Configuración H5 Games inyectada correctamente para Next.js */}
+        <Script
+          id="adsense-h5-config"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.adsbygoogle = window.adsbygoogle || [];
+              window.adBreak = window.adConfig = function(o) {adsbygoogle.push(o);}
+              window.adConfig({
+                preloadAdBreaks: 'on',
+                sound: 'on',
+              });
+            `
+          }}
+        />
+
         {children}
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
