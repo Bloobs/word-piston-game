@@ -243,14 +243,19 @@ export function StartScreen({
           : t.startScreen.newGame}
       </Button>
 
-      <div className="flex w-full max-w-md flex-1 flex-col overflow-hidden">
+      {/* Contenedor principal de la tabla y botón (flex-1 para que ocupe el resto) */}
+      <div className="flex w-full max-w-md flex-1 flex-col overflow-hidden pb-4">
+        
+        {/* Título Top 25 */}
         <div className="mb-4 flex shrink-0 items-center gap-2">
           <Trophy className="h-5 w-5 text-yellow-500" />
           <h2 className="text-lg font-semibold text-foreground">
             {t.startScreen.globalTop}
           </h2>
         </div>
-        <div className="flex-1 overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm">
+
+        {/* Tabla de clasificación */}
+        <div className="flex-1 overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm mb-4">
           <div
             ref={scrollRef}
             className={`h-full overflow-y-auto ${autoScrollComplete ? "" : "pointer-events-none"}`}
@@ -292,6 +297,23 @@ export function StartScreen({
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Botón de Buy Me a Coffee debajo de la tabla */}
+        <div className="flex shrink-0 justify-center w-full z-10 relative">
+          <a
+            href="https://buymeacoffee.com/palabramaster"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-[#FFDD00] px-6 py-2.5 font-semibold text-black shadow-lg transition-all hover:bg-[#FFEA4D] hover:scale-105 active:scale-95"
+          >
+            <svg className="h-5 w-5" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10.2 13.9C10.2 13.9 11.2 24.3 11.4 25.1C11.5 25.9 12 28.3 14.6 28.3C17.2 28.3 21 28.3 21 28.3C21 28.3 23.3 28.3 23.6 26C23.9 23.7 24.8 13.9 24.8 13.9H10.2Z" fill="currentColor"/>
+              <path d="M26.2 15C26.2 15 28.5 15.1 29 17.2C29.4 19.1 28 21.6 24.5 21.9L24.8 13.9C24.8 13.9 26.2 13.9 26.2 15Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M12.6 13.5L13.1 7.2H21.9L22.4 13.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="text-sm">{language === "es" ? "Invítame a un café" : "Buy me a coffee"}</span>
+          </a>
         </div>
       </div>
     </motion.div>
