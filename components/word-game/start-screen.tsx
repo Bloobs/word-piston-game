@@ -13,6 +13,12 @@ import {
 import { Trophy, Globe, Flag } from "lucide-react"
 import { useTranslations } from "@/hooks/use-translations"
 
+export interface RankingEntry {
+  name: string
+  country: string
+  score: number
+}
+
 interface StartScreenProps {
   onStartGame: (language: "es" | "en") => void
   onLanguageChange?: (language: "es" | "en") => void
@@ -20,42 +26,8 @@ interface StartScreenProps {
   initialLanguage?: "es" | "en"
   initialCountry?: string
   onCountryChange?: (country: string) => void
-  ranking?: RankingEntry[]
+  ranking: RankingEntry[] // Ahora es obligatorio, ya no tiene valor por defecto aquí
 }
-
-export interface RankingEntry {
-  name: string
-  country: string
-  score: number
-}
-
-export const INITIAL_RANKING: RankingEntry[] = [
-  { name: "María G.", country: "ES", score: 50 },
-  { name: "Carlos M.", country: "MX", score: 49 },
-  { name: "Ana P.", country: "AR", score: 48 },
-  { name: "Luis R.", country: "CO", score: 47 },
-  { name: "Sofia L.", country: "CL", score: 46 },
-  { name: "Diego H.", country: "PE", score: 45 },
-  { name: "Valentina C.", country: "ES", score: 44 },
-  { name: "Andrés F.", country: "VE", score: 43 },
-  { name: "Camila S.", country: "UY", score: 42 },
-  { name: "Martín B.", country: "EC", score: 41 },
-  { name: "Paula R.", country: "ES", score: 40 },
-  { name: "Javier M.", country: "MX", score: 39 },
-  { name: "Laura S.", country: "AR", score: 38 },
-  { name: "Roberto P.", country: "CO", score: 37 },
-  { name: "Elena F.", country: "CL", score: 36 },
-  { name: "Miguel A.", country: "PE", score: 35 },
-  { name: "Carmen L.", country: "ES", score: 34 },
-  { name: "Fernando G.", country: "VE", score: 33 },
-  { name: "Isabel T.", country: "UY", score: 32 },
-  { name: "Ricardo V.", country: "EC", score: 31 },
-  { name: "Patricia N.", country: "ES", score: 30 },
-  { name: "Alejandro C.", country: "MX", score: 29 },
-  { name: "Lucía H.", country: "AR", score: 28 },
-  { name: "Daniel O.", country: "CO", score: 27 },
-  { name: "Teresa M.", country: "CL", score: 26 },
-]
 
 interface CountryOption {
   code: string
@@ -102,6 +74,13 @@ function buildCountryOptions(language: "es" | "en"): CountryOption[] {
     .sort((a, b) => a.name.localeCompare(b.name))
 }
 
+// Exportamos un ranking inicial básico solo para que word-game.tsx lo use como fallback inicial
+export const INITIAL_RANKING: RankingEntry[] = Array.from({ length: 25 }, (_, i) => ({
+  name: "Cargando...",
+  country: "US",
+  score: 0,
+}))
+
 export function StartScreen({
   onStartGame,
   onLanguageChange,
@@ -109,7 +88,7 @@ export function StartScreen({
   initialLanguage = "es",
   initialCountry = "ES",
   onCountryChange,
-  ranking = INITIAL_RANKING,
+  ranking, // Ahora es obligatorio y siempre viene del padre
 }: StartScreenProps) {
   const [language, setLanguage] = useState<"es" | "en">(initialLanguage)
   const [country, setCountry] = useState(initialCountry)
@@ -133,15 +112,18 @@ export function StartScreen({
     setCountry(initialCountry)
   }, [initialCountry])
 
+  // Lógica del autoscroll
   useEffect(() => {
     const container = scrollRef.current
     if (!container) return
 
-    // Start at the bottom
+    // Solo hacemos autoscroll si hay datos reales
+    if (ranking.length === 0 || ranking[0].score === 0) return
+
     container.scrollTop = container.scrollHeight
 
     let animationId: number
-    const scrollSpeed = 1 // pixels per frame
+    const scrollSpeed = 2
 
     const autoScroll = () => {
       if (!container) return
@@ -150,12 +132,10 @@ export function StartScreen({
         container.scrollTop -= scrollSpeed
         animationId = requestAnimationFrame(autoScroll)
       } else {
-        // Reached the top, stop auto-scroll
         setAutoScrollComplete(true)
       }
     }
 
-    // Start auto-scroll after a short delay
     const timeoutId = setTimeout(() => {
       animationId = requestAnimationFrame(autoScroll)
     }, 500)
@@ -166,7 +146,7 @@ export function StartScreen({
         cancelAnimationFrame(animationId)
       }
     }
-  }, [])
+  }, [ranking]) // <-- Añadido `ranking` a las dependencias para que recalcule si la BBDD carga tarde
 
   return (
     <motion.div
@@ -243,10 +223,7 @@ export function StartScreen({
           : t.startScreen.newGame}
       </Button>
 
-      {/* Contenedor principal de la tabla y botón (flex-1 para que ocupe el resto) */}
       <div className="flex w-full max-w-md flex-1 flex-col overflow-hidden pb-4">
-        
-        {/* Título Top 25 */}
         <div className="mb-4 flex shrink-0 items-center gap-2">
           <Trophy className="h-5 w-5 text-yellow-500" />
           <h2 className="text-lg font-semibold text-foreground">
@@ -254,7 +231,6 @@ export function StartScreen({
           </h2>
         </div>
 
-        {/* Tabla de clasificación */}
         <div className="flex-1 overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm mb-4">
           <div
             ref={scrollRef}
@@ -263,7 +239,7 @@ export function StartScreen({
           >
             {ranking.map((player, index) => (
               <div
-                key={`${player.name}-${player.country}-${player.score}-${index}`}
+                key={`${player.name}-${player.score}-${index}`}
                 className="flex items-center justify-between border-b border-border/30 px-4 py-3 last:border-b-0"
               >
                 <div className="flex items-center gap-3">
@@ -288,18 +264,17 @@ export function StartScreen({
                     title={player.country}
                     aria-label={`Country ${player.country}`}
                   >
-                    {countryCodeToFlag(player.country)}
+                    {player.country === "US" && player.score === 0 ? "" : countryCodeToFlag(player.country)}
                   </span>
                 </div>
                 <span className="font-mono text-sm font-semibold text-primary">
-                  {player.score.toLocaleString(language === "es" ? "es-ES" : "en-US")}
+                  {player.score > 0 ? player.score.toLocaleString(language === "es" ? "es-ES" : "en-US") : ""}
                 </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Botón de Buy Me a Coffee debajo de la tabla */}
         <div className="flex shrink-0 justify-center w-full z-10 relative">
           <a
             href="https://buymeacoffee.com/palabramaster"

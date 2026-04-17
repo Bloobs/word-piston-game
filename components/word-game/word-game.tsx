@@ -1,7 +1,7 @@
 "use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useWordGame } from "@/hooks/use-word-game"
 import { INITIAL_RANKING, StartScreen, type RankingEntry } from "./start-screen"
 import { ScoreDisplay } from "./score-display"
@@ -13,34 +13,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trophy } from "lucide-react"
 import { useTranslations } from "@/hooks/use-translations"
-
-const INITIAL_RANKING_EN: RankingEntry[] = [
-  { name: "Olivia W.", country: "US", score: 50 },
-  { name: "Noah B.", country: "GB", score: 49 },
-  { name: "Amelia T.", country: "CA", score: 48 },
-  { name: "Liam K.", country: "AU", score: 47 },
-  { name: "Charlotte F.", country: "NZ", score: 46 },
-  { name: "James H.", country: "IE", score: 45 },
-  { name: "Emily S.", country: "US", score: 44 },
-  { name: "Henry L.", country: "GB", score: 43 },
-  { name: "Sophia R.", country: "CA", score: 42 },
-  { name: "Jack M.", country: "AU", score: 41 },
-  { name: "Grace P.", country: "NZ", score: 40 },
-  { name: "Lucas C.", country: "IE", score: 39 },
-  { name: "Ava N.", country: "US", score: 38 },
-  { name: "Benjamin D.", country: "GB", score: 37 },
-  { name: "Mia J.", country: "CA", score: 36 },
-  { name: "William G.", country: "AU", score: 35 },
-  { name: "Ella V.", country: "NZ", score: 34 },
-  { name: "Alexander O.", country: "IE", score: 33 },
-  { name: "Isla Q.", country: "US", score: 32 },
-  { name: "Daniel A.", country: "GB", score: 31 },
-  { name: "Sophie X.", country: "CA", score: 30 },
-  { name: "Michael Z.", country: "AU", score: 29 },
-  { name: "Ruby E.", country: "NZ", score: 28 },
-  { name: "Ethan Y.", country: "IE", score: 27 },
-  { name: "Lily I.", country: "US", score: 26 },
-]
 
 function getCountryFromBrowserLocale(): string {
   if (typeof navigator === "undefined") return "US"
@@ -85,25 +57,61 @@ export function WordGame() {
   const t = useTranslations(state.language)
 
   const [selectedCountry, setSelectedCountry] = useState(getCountryFromBrowserLocale)
+  
+  // Guardamos las dos tablas en memoria
   const [rankingByLanguage, setRankingByLanguage] = useState<Record<"es" | "en", RankingEntry[]>>({
     es: INITIAL_RANKING,
-    en: INITIAL_RANKING_EN,
+    en: INITIAL_RANKING,
   })
+  
   const [nickname, setNickname] = useState("")
   const [recordSaved, setRecordSaved] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   const [isHintModalOpen, setIsHintModalOpen] = useState(false)
   const [isProcessingHintAd, setIsProcessingHintAd] = useState(false)
 
-  const currentRanking = rankingByLanguage[state.language]
+  // Cargar rankings reales al arrancar (ambos idiomas)
+  useEffect(() => {
+    async function fetchRankings() {
+      try {
+        const [resEs, resEn] = await Promise.all([
+          fetch('/api/ranking?lang=es'),
+          fetch('/api/ranking?lang=en')
+        ]);
+        
+        if (resEs.ok && resEn.ok) {
+          const dataEs = await resEs.json();
+          const dataEn = await resEn.json();
+          
+          setRankingByLanguage({
+            es: dataEs.ranking || INITIAL_RANKING,
+            en: dataEn.ranking || INITIAL_RANKING
+          });
+        }
+      } catch (error) {
+        console.error("Error loading rankings:", error)
+      }
+    }
+
+    fetchRankings()
+  }, [])
+
+  // El ranking actual a mostrar dependerá del idioma seleccionado
+  const currentRanking = rankingByLanguage[state.language];
 
   const qualifyingRank = useMemo(() => {
     if (!state.gameOver) return null
     const index = currentRanking.findIndex((entry) => state.totalScore > entry.score)
+    
+    if (index === -1 && currentRanking.length < 25 && state.totalScore > 0) {
+      return currentRanking.length + 1
+    }
+    
     return index === -1 ? null : index + 1
   }, [currentRanking, state.gameOver, state.totalScore])
 
-  const qualifiesForTop25 = qualifyingRank !== null
+  const qualifiesForTop25 = qualifyingRank !== null && state.totalScore > 0
   const needsRecordSubmission = qualifiesForTop25 && !recordSaved
 
   const handleStartGame = (language: "es" | "en") => {
@@ -114,23 +122,46 @@ export function WordGame() {
     actions.startNewGame(language)
   }
 
-  const handleSaveRecord = () => {
+  const handleSaveRecord = async () => {
     const cleanName = nickname.trim()
-    if (!cleanName) return
+    if (!cleanName || isSaving) return
 
-    setRankingByLanguage((prev) => {
-      const targetRanking = prev[state.language]
-      const updated = [...targetRanking, { name: cleanName, country: selectedCountry, score: state.totalScore }]
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 25)
+    setIsSaving(true)
 
-      return {
-        ...prev,
-        [state.language]: updated,
+    try {
+      const response = await fetch('/api/ranking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: cleanName,
+          country: selectedCountry,
+          score: state.totalScore,
+          lang: state.language // ¡Enviamos el idioma en el que ha jugado!
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.ranking) {
+          setRankingByLanguage(prev => ({
+            ...prev,
+            [state.language]: data.ranking
+          }))
+          setRecordSaved(true)
+        }
       }
-    })
-
-    setRecordSaved(true)
+    } catch (error) {
+      console.error("Error saving record:", error)
+      setRankingByLanguage((prev) => {
+        const updated = [...prev[state.language], { name: cleanName, country: selectedCountry, score: state.totalScore }]
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 25)
+        return { ...prev, [state.language]: updated }
+      })
+      setRecordSaved(true)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleHintRequest = () => {
@@ -152,11 +183,7 @@ export function WordGame() {
     if (isProcessingHintAd) return
     setIsProcessingHintAd(true)
 
-    // Nuestro "seguro de vida": si en 2.5 segundos AdSense no ha hecho nada 
-    // (ni ha mostrado anuncio ni ha dado error), forzamos la pista.
-    // Esto salva los bloqueos en localhost o con AdBlockers muy agresivos.
     let adTimeout: NodeJS.Timeout | null = setTimeout(() => {
-      console.warn("AdSense no respondió a tiempo. Entregando pista de emergencia.")
       safeGrantHint()
     }, 2500)
 
@@ -177,7 +204,6 @@ export function WordGame() {
     }
 
     try {
-      // Si la API no existe directamente en window
       if (typeof window === "undefined" || typeof window.adBreak !== "function") {
         safeGrantHint()
         return
@@ -187,26 +213,20 @@ export function WordGame() {
         type: "rewarded",
         name: "hint_reward",
         beforeReward: (showAdFn) => {
-          // Google responde que tiene un anuncio. Cancelamos el timeout para 
-          // que el usuario pueda verlo tranquilo sin que salte la pista por detrás.
           if (adTimeout) clearTimeout(adTimeout)
           showAdFn()
         },
         adViewed: () => {
-          // Vio el anuncio entero
           safeGrantHint()
         },
         adDismissed: () => {
-          // Cerró el anuncio a la mitad
           setIsHintModalOpen(false)
           safeStopLoading()
         },
         adBreakEmpty: () => {
-          // AdSense dice oficialmente "No tengo anuncios para ti hoy"
           safeGrantHint()
         },
         adBreakDone: () => {
-          // Limpieza final de AdSense
           safeStopLoading()
         },
       })
@@ -219,13 +239,14 @@ export function WordGame() {
   if (!state.gameStarted && !state.gameOver) {
     return (
       <StartScreen
+        key={state.language} // Forzamos repintado al cambiar idioma para que actualice la tabla al instante
         onStartGame={handleStartGame}
         onLanguageChange={actions.setLanguage}
         isDictionaryLoading={state.dictionaryLoading}
         initialLanguage={state.language}
         initialCountry={selectedCountry}
         onCountryChange={setSelectedCountry}
-        ranking={currentRanking}
+        ranking={currentRanking} // Le pasamos la tabla que toca según el idioma elegido
       />
     )
   }
@@ -371,14 +392,15 @@ export function WordGame() {
                     onChange={(event) => setNickname(event.target.value)}
                     placeholder={t.gameOver.nicknamePlaceholder}
                     maxLength={16}
+                    disabled={isSaving}
                   />
 
                   <Button
                     onClick={handleSaveRecord}
                     className="w-full"
-                    disabled={nickname.trim().length < 2}
+                    disabled={nickname.trim().length < 2 || isSaving}
                   >
-                    {t.gameOver.saveRecord}
+                    {isSaving ? (state.language === 'es' ? "Guardando..." : "Saving...") : t.gameOver.saveRecord}
                   </Button>
                 </div>
               )}
@@ -387,7 +409,7 @@ export function WordGame() {
                 <p className="text-sm text-green-500">{t.gameOver.recordSaved}</p>
               )}
 
-              <Button onClick={actions.goToHome} size="lg" disabled={needsRecordSubmission}>
+              <Button onClick={actions.goToHome} size="lg" disabled={needsRecordSubmission || isSaving}>
                 {t.gameOver.ok}
               </Button>
             </motion.div>
