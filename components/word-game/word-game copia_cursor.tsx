@@ -60,16 +60,9 @@ function getCountryFromBrowserLocale(): string {
   return "US"
 }
 
-declare global {
-  interface Window {
-    adsbygoogle?: unknown[]
-  }
-}
-
 export function WordGame() {
   const { state, actions, currentWord, isCurrentWordValid } = useWordGame()
   const t = useTranslations(state.language)
-
   const [selectedCountry, setSelectedCountry] = useState(getCountryFromBrowserLocale)
   const [rankingByLanguage, setRankingByLanguage] = useState<Record<"es" | "en", RankingEntry[]>>({
     es: INITIAL_RANKING,
@@ -77,9 +70,6 @@ export function WordGame() {
   })
   const [nickname, setNickname] = useState("")
   const [recordSaved, setRecordSaved] = useState(false)
-
-  const [isHintModalOpen, setIsHintModalOpen] = useState(false)
-  const [isProcessingHintAd, setIsProcessingHintAd] = useState(false)
 
   const currentRanking = rankingByLanguage[state.language]
 
@@ -95,8 +85,6 @@ export function WordGame() {
   const handleStartGame = (language: "es" | "en") => {
     setNickname("")
     setRecordSaved(false)
-    setIsHintModalOpen(false)
-    setIsProcessingHintAd(false)
     actions.startNewGame(language)
   }
 
@@ -115,46 +103,7 @@ export function WordGame() {
         [state.language]: updated,
       }
     })
-
     setRecordSaved(true)
-  }
-
-  const handleHintRequest = () => {
-    // Ya no comprobamos los 25 puntos
-    if (isProcessingHintAd) return
-    setIsHintModalOpen(true)
-  }
-
-  const handleCloseHintModal = () => {
-    if (isProcessingHintAd) return
-    setIsHintModalOpen(false)
-  }
-
-  const showRewardedAd = async () => {
-    if (typeof window !== "undefined") {
-      try {
-        window.adsbygoogle = window.adsbygoogle || []
-      } catch {
-        // ignore
-      }
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 1800))
-  }
-
-  const handleWatchAd = async () => {
-    setIsProcessingHintAd(true)
-
-    try {
-      await showRewardedAd()
-      setIsHintModalOpen(false)
-      // Usamos la pista pero ya sin coste de puntos
-      // Si tu hook useWordGame internamente restaba 25, idealmente deberías quitarlo allí también.
-      // Pero si no quieres tocar el hook ahora, al menos la validación visual y de uso está libre aquí.
-      actions.useHint()
-    } finally {
-      setIsProcessingHintAd(false)
-    }
   }
 
   if (!state.gameStarted && !state.gameOver) {
@@ -173,6 +122,7 @@ export function WordGame() {
 
   return (
     <div className="flex h-full flex-col">
+      {/* Header with scores */}
       <div className="shrink-0 px-4 py-4">
         <ScoreDisplay
           partialScore={state.partialScore}
@@ -181,6 +131,7 @@ export function WordGame() {
         />
       </div>
 
+      {/* Word construction zone */}
       <div className="shrink-0 px-4 py-2">
         <WordZone
           letters={state.wordZone}
@@ -190,18 +141,20 @@ export function WordGame() {
         />
       </div>
 
+      {/* Game controls */}
       <div className="shrink-0 py-3">
         <GameControls
           canSubmit={state.wordZone.length >= 3}
-          canUseHint={true} // Ahora siempre se puede pedir pista
+          canUseHint={state.totalScore >= 25}
           onSubmit={actions.submitWord}
-          onHint={handleHintRequest}
+          onHint={actions.useHint}
           onGiveUp={actions.giveUp}
           totalScore={state.totalScore}
           language={state.language}
         />
       </div>
 
+      {/* Game board - fills remaining space */}
       <div className="flex-1 overflow-hidden">
         <GameBoard
           columns={state.columns}
@@ -210,6 +163,7 @@ export function WordGame() {
         />
       </div>
 
+      {/* Result dialog */}
       <AnimatePresence>
         <ResultDialog
           isOpen={state.showResultDialog}
@@ -222,65 +176,7 @@ export function WordGame() {
         />
       </AnimatePresence>
 
-      <AnimatePresence>
-        {isHintModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl overflow-hidden"
-            >
-              <div className="space-y-3 text-center">
-                <h3 className="text-xl font-bold text-foreground">
-                  {state.language === "es" ? "Desbloquear pista" : "Unlock hint"}
-                </h3>
-
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {state.language === "es"
-                    ? "La pista se mostrará después de un breve anuncio. Gracias por apoyar el juego."
-                    : "The hint will be shown after a short ad. Thanks for supporting the game."}
-                </p>
-                {/* Eliminado el texto que decía que se descontaban 25 puntos */}
-              </div>
-
-              {/* Botones arreglados para no desbordar: flex-col por defecto, botones al 100% de ancho */}
-              <div className="mt-6 flex flex-col gap-3">
-                <Button
-                  type="button"
-                  className="w-full"
-                  onClick={handleWatchAd}
-                  disabled={isProcessingHintAd}
-                >
-                  {isProcessingHintAd
-                    ? state.language === "es"
-                      ? "Cargando anuncio..."
-                      : "Loading ad..."
-                    : state.language === "es"
-                      ? "Ver anuncio"
-                      : "Watch ad"}
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleCloseHintModal}
-                  disabled={isProcessingHintAd}
-                >
-                  {state.language === "es" ? "Cancelar" : "Cancel"}
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+      {/* Game Over Overlay */}
       <AnimatePresence>
         {state.gameOver && (
           <motion.div
@@ -297,25 +193,21 @@ export function WordGame() {
             >
               <Trophy className="h-16 w-16 text-yellow-500" />
               <h2 className="text-3xl font-bold text-foreground">{t.gameOver.title}</h2>
-
               <div className="text-center">
                 <p className="text-muted-foreground">{t.gameOver.finalScore}</p>
                 <p className="text-5xl font-bold text-primary">{state.totalScore}</p>
               </div>
-
               {needsRecordSubmission && (
                 <div className="w-full space-y-3">
                   <p className="text-center text-sm font-medium text-foreground">
                     {t.gameOver.newRecordMessage} #{qualifyingRank}
                   </p>
-
                   <Input
                     value={nickname}
                     onChange={(event) => setNickname(event.target.value)}
                     placeholder={t.gameOver.nicknamePlaceholder}
                     maxLength={16}
                   />
-
                   <Button
                     onClick={handleSaveRecord}
                     className="w-full"
@@ -325,11 +217,9 @@ export function WordGame() {
                   </Button>
                 </div>
               )}
-
               {recordSaved && qualifiesForTop25 && (
                 <p className="text-sm text-green-500">{t.gameOver.recordSaved}</p>
               )}
-
               <Button onClick={actions.goToHome} size="lg" disabled={needsRecordSubmission}>
                 {t.gameOver.ok}
               </Button>

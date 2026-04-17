@@ -41,12 +41,11 @@ export function GameControls({
         variant="outline"
         size="sm"
         onClick={onHint}
-        disabled={!canUseHint || totalScore < 25}
+        disabled={!canUseHint}
         className="gap-2"
       >
         <Lightbulb className="h-4 w-4" />
         <span className="hidden sm:inline">{t.controls.hint}</span>
-        <span className="text-xs text-muted-foreground">(-25)</span>
       </Button>
 
       <Button

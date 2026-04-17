@@ -558,7 +558,7 @@ export function useWordGame() {
 
   const useHint = useCallback(() => {
     setState((prev) => {
-      if (prev.totalScore < 25) return prev
+      //if (prev.totalScore < 25) return prev
 
       const hintResult = findHintCombination(prev.columns, prev.language)
       if (hintResult.letterIds.length === 0) return prev
@@ -568,7 +568,7 @@ export function useWordGame() {
 
       return {
         ...prev,
-        totalScore: prev.totalScore - 25,
+        totalScore: prev.totalScore,
         hintLetters: hintResult.letterIds,
       }
     })
