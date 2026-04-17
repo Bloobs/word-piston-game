@@ -123,7 +123,7 @@ export function StartScreen({
     container.scrollTop = container.scrollHeight
 
     let animationId: number
-    const scrollSpeed = 2
+    const scrollSpeed = 2.5
 
     const autoScroll = () => {
       if (!container) return
