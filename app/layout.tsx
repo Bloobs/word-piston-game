@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Script from "next/script"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
@@ -11,6 +10,10 @@ export const metadata: Metadata = {
   title: "PalabraMaster - Juego de Palabras",
   description: "Forma palabras con las letras del tablero y acumula puntos",
   generator: "v0.app",
+  // Añadimos esto para asegurar la verificación de AdSense por metadatos:
+  other: {
+    "google-adsense-account": "ca-pub-8772151413997813"
+  },
   icons: {
     icon: [
       {
@@ -37,13 +40,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-background" suppressHydrationWarning>
-      <body className="bg-background font-sans text-foreground antialiased" suppressHydrationWarning>
-        <Script
-          id="google-adsense"
-          strategy="afterInteractive"
+      <head>
+        {/* Script nativo de AdSense cargado directamente en el head */}
+        <script
+          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8772151413997813"
           crossOrigin="anonymous"
-        />
+        ></script>
+      </head>
+      <body className="bg-background font-sans text-foreground antialiased" suppressHydrationWarning>
         {children}
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
