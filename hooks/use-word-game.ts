@@ -1,6 +1,8 @@
 "use client"
 
+
 import { useState, useCallback, useMemo, useEffect } from "react"
+
 
 // Scrabble letter frequencies for Spanish
 const LETTER_DISTRIBUTION_ES: Record<string, { count: number; points: number }> = {
@@ -30,6 +32,7 @@ const LETTER_DISTRIBUTION_ES: Record<string, { count: number; points: number }> 
   X: { count: 1, points: 8 },
   Z: { count: 1, points: 10 },
 }
+
 
 // Scrabble letter frequencies for English
 const LETTER_DISTRIBUTION_EN: Record<string, { count: number; points: number }> = {
@@ -61,6 +64,7 @@ const LETTER_DISTRIBUTION_EN: Record<string, { count: number; points: number }> 
   Z: { count: 1, points: 10 },
 }
 
+
 // Mock valid words for demo (Spanish)
 const MOCK_VALID_WORDS_ES = new Set([
   "SOL", "MAR", "CASA", "MESA", "LUNA", "AMOR", "VIDA", "AGUA",
@@ -78,6 +82,7 @@ const MOCK_VALID_WORDS_ES = new Set([
   "NUEVO", "VIEJO", "ALTO", "BAJO", "LARGO", "CORTO", "ANCHO",
 ])
 
+
 // Mock valid words for demo (English)
 const MOCK_VALID_WORDS_EN = new Set([
   "SUN", "MOON", "STAR", "HOUSE", "TABLE", "WATER", "FIRE", "AIR",
@@ -88,6 +93,7 @@ const MOCK_VALID_WORDS_EN = new Set([
   "LOW", "LONG", "SHORT", "WIDE", "EAT", "DRINK", "SLEEP", "RUN",
   "SWIM", "PLAY", "SING", "DANCE", "DREAM", "SMILE",
 ])
+
 
 // Mock word definitions
 const MOCK_DEFINITIONS: Record<string, string> = {
@@ -125,6 +131,7 @@ const MOCK_DEFINITIONS: Record<string, string> = {
   LIBRO: "Conjunto de hojas impresas y encuadernadas.",
 }
 
+
 export interface Letter {
   id: string
   char: string
@@ -132,6 +139,7 @@ export interface Letter {
   columnIndex: number
   originalColumnIndex: number
 }
+
 
 export interface GameState {
   columns: Letter[][]
@@ -151,11 +159,13 @@ export interface GameState {
   dictionaryLoaded: boolean
 }
 
+
 // Global dictionary cache
 let spanishDictionary: Set<string> | null = null
 let dictionaryLoadPromise: Promise<Set<string>> | null = null
 let englishDictionary: Set<string> | null = null
 let englishDictionaryLoadPromise: Promise<Set<string>> | null = null
+
 
 async function loadSpanishDictionary(): Promise<Set<string>> {
   if (spanishDictionary) return spanishDictionary
@@ -192,10 +202,13 @@ async function loadSpanishDictionary(): Promise<Set<string>> {
   return dictionaryLoadPromise
 }
 
+
 async function loadEnglishDictionary(): Promise<Set<string>> {
   if (englishDictionary) return englishDictionary
 
+
   if (englishDictionaryLoadPromise) return englishDictionaryLoadPromise
+
 
   englishDictionaryLoadPromise = fetch("/dictionaries/dicc_en_en.txt")
     .then((response) => {
@@ -217,8 +230,10 @@ async function loadEnglishDictionary(): Promise<Set<string>> {
       return englishDictionary
     })
 
+
   return englishDictionaryLoadPromise
 }
+
 
 const NUM_COLUMNS = 9
 const LETTERS_PER_COLUMN = 6
@@ -227,9 +242,11 @@ const VOWELS_EN = new Set(["A", "E", "I", "O", "U"])
 const VOWEL_MULTIPLIER = 1.25
 const CONSONANT_MULTIPLIER = 0.92
 
+
 function getLetterDistribution(language: "es" | "en"): Record<string, { count: number; points: number }> {
   return language === "en" ? LETTER_DISTRIBUTION_EN : LETTER_DISTRIBUTION_ES
 }
+
 
 function generateLetterPool(language: "es" | "en"): string[] {
   const distribution = getLetterDistribution(language)
@@ -245,6 +262,7 @@ function generateLetterPool(language: "es" | "en"): string[] {
   return pool
 }
 
+
 function shuffleArray<T>(array: T[]): T[] {
   const newArray = [...array]
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -254,12 +272,14 @@ function shuffleArray<T>(array: T[]): T[] {
   return newArray
 }
 
+
 function generateInitialColumns(language: "es" | "en"): Letter[][] {
   const distribution = getLetterDistribution(language)
   const pool = shuffleArray(generateLetterPool(language))
   const columns: Letter[][] = []
   let letterIndex = 0
   let idCounter = 0
+
 
   for (let col = 0; col < NUM_COLUMNS; col++) {
     const column: Letter[] = []
@@ -279,6 +299,7 @@ function generateInitialColumns(language: "es" | "en"): Letter[][] {
   return columns
 }
 
+
 function checkWord(word: string, language: "es" | "en"): boolean {
   if (language === "es" && spanishDictionary) {
     return spanishDictionary.has(word.toUpperCase())
@@ -290,13 +311,16 @@ function checkWord(word: string, language: "es" | "en"): boolean {
     return MOCK_VALID_WORDS_EN.has(word.toUpperCase())
   }
 
+
   // Fallback to Spanish mock words if dictionary is not loaded
   return MOCK_VALID_WORDS_ES.has(word.toUpperCase())
 }
 
+
 function getDefinition(word: string): string {
   return MOCK_DEFINITIONS[word.toUpperCase()] || "Palabra válida en español."
 }
+
 
 function calculateBonus(wordLength: number): number {
   if (wordLength >= 9) return 25
@@ -305,6 +329,7 @@ function calculateBonus(wordLength: number): number {
   if (wordLength >= 6) return 5
   return 0
 }
+
 
 function findHintCombination(columns: Letter[][], language: "es" | "en"): { letterIds: string[]; word: string | null } {
   // Get top letters from each non-empty column
@@ -315,16 +340,19 @@ function findHintCombination(columns: Letter[][], language: "es" | "en"): { lett
     }
   })
 
+
   // Use the appropriate dictionary
   const dictionary = language === "es"
     ? spanishDictionary ?? MOCK_VALID_WORDS_ES
     : englishDictionary ?? MOCK_VALID_WORDS_EN
+
 
   // Try to find a valid word from top letters
   for (const word of dictionary) {
     const wordLetters = word.split("")
     const usedIndices: number[] = []
     let found = true
+
 
     for (const char of wordLetters) {
       const availableIndex = topLetters.findIndex(
@@ -337,6 +365,7 @@ function findHintCombination(columns: Letter[][], language: "es" | "en"): { lett
       usedIndices.push(availableIndex)
     }
 
+
     if (found && usedIndices.length >= 3) {
       return {
         letterIds: usedIndices.map((idx) => topLetters[idx].letter.id),
@@ -345,13 +374,16 @@ function findHintCombination(columns: Letter[][], language: "es" | "en"): { lett
     }
   }
 
+
   return { letterIds: [], word: null }
 }
+
 
 function checkNoMoreMoves(columns: Letter[][], language: "es" | "en"): boolean {
   // Simple check: if all columns are empty
   const totalLetters = columns.reduce((sum, col) => sum + col.length, 0)
   if (totalLetters === 0) return true
+
 
   // Check if any 3-letter combo is possible from top letters
   const hintResult = findHintCombination(columns, language)
@@ -360,6 +392,7 @@ function checkNoMoreMoves(columns: Letter[][], language: "es" | "en"): boolean {
   }
   return hintResult.letterIds.length === 0
 }
+
 
 export function useWordGame() {
   const [state, setState] = useState<GameState>({
@@ -380,17 +413,21 @@ export function useWordGame() {
     dictionaryLoaded: spanishDictionary !== null,
   })
 
+
   // Load language dictionary on demand
   useEffect(() => {
     const shouldLoadSpanish = state.language === "es" && !spanishDictionary
     const shouldLoadEnglish = state.language === "en" && !englishDictionary
 
+
     if (!state.dictionaryLoading && (shouldLoadSpanish || shouldLoadEnglish)) {
       setState((prev) => ({ ...prev, dictionaryLoading: true }))
+
 
       const loadDictionary = shouldLoadSpanish
         ? loadSpanishDictionary
         : loadEnglishDictionary
+
 
       loadDictionary().then(() => {
         setState((prev) => ({
@@ -401,6 +438,7 @@ export function useWordGame() {
       })
     }
   }, [state.language, state.dictionaryLoading])
+
 
   const startNewGame = useCallback((language: "es" | "en" = "es") => {
     setState((prev) => ({
@@ -422,6 +460,7 @@ export function useWordGame() {
     }))
   }, [])
 
+
   const setLanguage = useCallback((language: "es" | "en") => {
     setState((prev) => ({
       ...prev,
@@ -429,9 +468,11 @@ export function useWordGame() {
     }))
   }, [])
 
+
   const selectLetter = useCallback((letterId: string) => {
     setState((prev) => {
       if (!prev.gameStarted || prev.gameOver) return prev
+
 
       // Find the letter in columns (only top letter can be selected)
       for (let colIndex = 0; colIndex < prev.columns.length; colIndex++) {
@@ -453,28 +494,6 @@ export function useWordGame() {
     })
   }, [])
 
-  const returnLetter = useCallback((letterId: string) => {
-    setState((prev) => {
-      const letterIndex = prev.wordZone.findIndex((l) => l.id === letterId)
-      if (letterIndex === -1) return prev
-
-      const letter = prev.wordZone[letterIndex]
-      const newWordZone = prev.wordZone.filter((l) => l.id !== letterId)
-      const newColumns = prev.columns.map((col, idx) => {
-        if (idx === letter.originalColumnIndex) {
-          return [letter, ...col]
-        }
-        return col
-      })
-
-      return {
-        ...prev,
-        columns: newColumns,
-        wordZone: newWordZone,
-        hintLetters: [],
-      }
-    })
-  }, [])
 
   // Always return the last letter (LIFO behavior)
   const returnLastLetter = useCallback(() => {
@@ -483,12 +502,9 @@ export function useWordGame() {
 
       const letter = prev.wordZone[prev.wordZone.length - 1]
       const newWordZone = prev.wordZone.slice(0, -1)
-      const newColumns = prev.columns.map((col, idx) => {
-        if (idx === letter.originalColumnIndex) {
-          return [letter, ...col]
-        }
-        return col
-      })
+      const newColumns = prev.columns.map((col, idx) => 
+        idx === letter.originalColumnIndex ? [letter, ...col] : col
+      )
 
       return {
         ...prev,
@@ -499,24 +515,26 @@ export function useWordGame() {
     })
   }, [])
 
+
   const submitWord = useCallback(() => {
     setState((prev) => {
       if (prev.wordZone.length < 3) return prev
 
+
       const word = prev.wordZone.map((l) => l.char).join("")
       const isValid = checkWord(word, prev.language)
 
+
       if (!isValid) {
-        // Return all letters to their columns
-        let newColumns = [...prev.columns]
-        for (const letter of prev.wordZone) {
-          newColumns = newColumns.map((col, idx) => {
-            if (idx === letter.originalColumnIndex) {
-              return [letter, ...col]
-            }
-            return col
-          })
-        }
+        // SOLUCIÓN LIMPIA: Al filtrar el wordZone, las letras mantienen su orden original 
+        // de extracción. Al hacer spread antes de la columna actual, recuperan su posición exacta.
+        const newColumns = prev.columns.map((col, idx) => {
+          const lettersToRestore = prev.wordZone.filter(
+            (l) => l.originalColumnIndex === idx
+          )
+          return [...lettersToRestore, ...col]
+        })
+
         return {
           ...prev,
           columns: newColumns,
@@ -525,21 +543,26 @@ export function useWordGame() {
         }
       }
 
+
       // Calculate points from current word
       const basePoints = prev.wordZone.reduce((sum, l) => sum + l.points, 0)
       const bonus = calculateBonus(prev.wordZone.length)
       const wordPoints = basePoints + bonus
       const definition = getDefinition(word)
 
+
       // Check for board cleared bonus
       const boardCleared = prev.columns.every((col) => col.length === 0)
       const clearBonus = boardCleared ? 100 : 0
 
+
       // Add word points to total score (partial resets after accumulating)
       const newTotalScore = prev.totalScore + wordPoints + clearBonus
 
+
       // Check if game is over
       const noMoreMoves = checkNoMoreMoves(prev.columns, prev.language)
+
 
       return {
         ...prev,
@@ -556,15 +579,18 @@ export function useWordGame() {
     })
   }, [])
 
+
   const useHint = useCallback(() => {
     setState((prev) => {
       //if (prev.totalScore < 25) return prev
+
 
       const hintResult = findHintCombination(prev.columns, prev.language)
       if (hintResult.letterIds.length === 0) return prev
       if (hintResult.word) {
         console.log(`[word-game] Pista: palabra sugerida por el algoritmo: ${hintResult.word}`)
       }
+
 
       return {
         ...prev,
@@ -574,6 +600,7 @@ export function useWordGame() {
     })
   }, [])
 
+
   const giveUp = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -582,12 +609,14 @@ export function useWordGame() {
     }))
   }, [])
 
+
   const closeResultDialog = useCallback(() => {
     setState((prev) => ({
       ...prev,
       showResultDialog: false,
     }))
   }, [])
+
 
   // Reset game and go back to home screen
   const goToHome = useCallback(() => {
@@ -610,21 +639,25 @@ export function useWordGame() {
     }))
   }, [])
 
+
   const currentWord = useMemo(
     () => state.wordZone.map((l) => l.char).join(""),
     [state.wordZone]
   )
+
 
   // Calculate partial score dynamically from word zone letters
   const partialScore = useMemo(() => {
     return state.wordZone.reduce((sum, letter) => sum + letter.points, 0)
   }, [state.wordZone])
 
+
   // Check if current word is valid (minimum 3 letters)
   const isCurrentWordValid = useMemo(() => {
     if (state.wordZone.length < 3) return false
     return checkWord(currentWord, state.language)
   }, [currentWord, state.wordZone.length, state.language])
+
 
   return {
     state: {
@@ -636,7 +669,6 @@ export function useWordGame() {
       startNewGame,
       setLanguage,
       selectLetter,
-      returnLetter,
       returnLastLetter,
       submitWord,
       useHint,
