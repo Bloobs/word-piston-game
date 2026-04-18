@@ -28,13 +28,11 @@ export function LetterTile({
       onClick={onClick}
       disabled={!isTop && !inWordZone}
       className={cn(
-        "relative flex items-center justify-center rounded-md sm:rounded-lg font-sans",
+        "relative flex items-center justify-center rounded-lg font-sans flex-shrink-0",
         
-        // --- LA CLAVE DEFINITIVA ---
-        // 'w-full' hace que se adapte a su columna (que calculamos arriba)
-        // 'aspect-square' asegura que sean siempre cuadradas perfectas
-        // Limitamos la altura máxima y mínima para que no explote
-        "w-full aspect-square max-h-[44px] min-h-[32px] sm:h-12 sm:w-12 md:h-14 md:w-14",
+        // TAMAÑOS EXACTOS (en lugar de porcentajes que rompen el layout)
+        // 38px (h-9.5 w-9.5) x 9 = 342px de ancho total. ¡Cabe perfecto en un iPhone de 375/390px!
+        "h-[38px] w-[38px] sm:h-12 sm:w-12 md:h-14 md:w-14",
         
         isTop || inWordZone
           ? `cursor-pointer ${activeBg} hover:-translate-y-0.5 active:translate-y-1 active:shadow-none`
@@ -57,9 +55,9 @@ export function LetterTile({
     >
       <motion.span 
         className={cn(
-          "font-extrabold uppercase",
-          // Letra a text-base/lg para cuadrar
-          "text-[16px] sm:text-2xl md:text-[28px]"
+          "font-bold uppercase tracking-tight",
+          // Letra grande (22px en móvil), al límite sin reventar el contenedor
+          "text-[22px] sm:text-[26px] md:text-[30px]"
         )}
         animate={{ 
           color: (isTop || inWordZone) ? "#0f172a" : "rgba(15, 23, 42, 0.8)" 
@@ -69,11 +67,12 @@ export function LetterTile({
         {letter.char}
       </motion.span>
       
+      {/* El numerito super visible que pediste */}
       <motion.span 
         className={cn(
           "absolute font-bold leading-none",
-          // Numeritos pequeñitos pero legibles, pegados abajo
-          "bottom-[2px] right-[2px] text-[8px] sm:bottom-1 sm:right-1 sm:text-[11px] md:text-xs"
+          // Numerito a text-[10px] para que se lea perfecto en el metro
+          "bottom-[3px] right-[4px] text-[10px] sm:bottom-1 sm:right-1.5 sm:text-[11px] md:text-xs"
         )}
         animate={{ 
           color: (isTop || inWordZone) ? "#64748b" : "rgba(71, 85, 105, 0.7)" 
