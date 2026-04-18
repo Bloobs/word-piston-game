@@ -272,7 +272,7 @@ export function WordGame() {
 
       <div className="shrink-0 py-3">
         <GameControls
-          canSubmit={state.wordZone.length >= 3}
+          canSubmit={isCurrentWordValid} // <-- Corregido: Ahora solo se activa si la palabra existe
           canUseHint={true}
           onSubmit={actions.submitWord}
           onHint={handleHintRequest}

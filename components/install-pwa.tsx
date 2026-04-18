@@ -94,7 +94,7 @@ export function InstallPWA() {
               </p>
             ) : (
               <div className="mt-2 flex items-center justify-between">
-                <p className="text-sm text-slate-400">Juega más rápido y sin conexión.</p>
+                <p className="text-sm text-slate-400">Juega a pantalla completa y entra con un toque.</p>
                 <button
                   onClick={handleInstallClick}
                   className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white shadow-md hover:bg-emerald-500 active:scale-95 transition-all"

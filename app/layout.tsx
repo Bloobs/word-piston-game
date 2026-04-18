@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { InstallPWA } from "@/components/install-pwa"
+import { NetworkMonitor } from "@/components/network-monitor"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -92,6 +93,9 @@ export default function RootLayout({
 
         {/* AQUÍ AÑADIMOS EL BANNER DE INSTALACIÓN PWA */}
         <InstallPWA />
+
+        <NetworkMonitor />
+        
       </body>
     </html>
   )

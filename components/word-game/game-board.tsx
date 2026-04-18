@@ -17,13 +17,12 @@ export function GameBoard({
 }: GameBoardProps) {
   return (
     <LayoutGroup>
-      {/* Hemos quitado los padding laterales grandes y reducido el gap horizontal a casi nada (gap-[2px]) para que entren 9 columnas */}
-      <div className="flex flex-1 items-start justify-center gap-[2px] sm:gap-2 px-1 pt-4 w-full max-w-3xl mx-auto">
+      {/* Tu contenedor original pero con gap un poco más ajustado para que quepan 9 */}
+      <div className="flex flex-1 items-start justify-center gap-[3px] px-1 sm:gap-2 sm:px-4 pt-4">
         {columns.map((column, colIndex) => (
           <div
             key={colIndex}
-            // flex-1 hace que cada columna ocupe su fracción exacta (1/9)
-            className="flex flex-1 flex-col gap-1 sm:gap-2 max-w-[48px] sm:max-w-[56px]" 
+            className="flex flex-col gap-[3px] sm:gap-2"
           >
             <AnimatePresence mode="popLayout">
               {column.map((letter, rowIndex) => (
