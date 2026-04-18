@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { InstallPWA } from "@/components/install-pwa"
 import { NetworkMonitor } from "@/components/network-monitor"
-import { Analytics } from "@vercel/analytics/next"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -96,8 +95,6 @@ export default function RootLayout({
         <InstallPWA />
 
         <NetworkMonitor />
-
-        <Analytics />
         
       </body>
     </html>
