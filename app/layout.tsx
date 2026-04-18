@@ -3,13 +3,14 @@ import Script from "next/script"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+import { InstallPWA } from "@/components/install-pwa"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 // Configuración específica para dispositivos móviles y PWA
 export const viewport: Viewport = {
-  themeColor: "#09090b",
+  themeColor: "#020817",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -19,7 +20,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "PalabraMaster - Juego de Palabras",
   description: "Forma palabras con las letras del tablero y acumula puntos",
-  generator: "v0.app",
   manifest: "/manifest.json", // Enlace al manifest para la PWA
   appleWebApp: {
     capable: true,
@@ -89,6 +89,9 @@ export default function RootLayout({
 
         {children}
         {process.env.NODE_ENV === "production" && <Analytics />}
+
+        {/* AQUÍ AÑADIMOS EL BANNER DE INSTALACIÓN PWA */}
+        <InstallPWA />
       </body>
     </html>
   )
