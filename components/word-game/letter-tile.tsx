@@ -68,19 +68,24 @@ export function LetterTile({
       </motion.span>
       
       {/* El numerito super visible que pediste */}
+    
+      {/* El numerito super visible que pediste */}
       <motion.span 
         className={cn(
-          "absolute font-bold leading-none",
-          // Numerito a text-[10px] para que se lea perfecto en el metro
-          "bottom-[3px] right-[4px] text-[10px] sm:bottom-1 sm:right-1.5 sm:text-[11px] md:text-xs"
+          // Hemos quitado leading-none para que el número asiente mejor
+          "absolute font-black",
+          // MÓVIL: Aumentamos a text-[12px] (muy legible). 
+          // Lo pegamos al máximo a la esquina (bottom-[1px] right-[2px]) para no chocar con la letra grande
+          "bottom-[1px] right-[2px] text-[12px] sm:bottom-0.5 sm:right-1.5 sm:text-[13px] md:text-[14px]"
         )}
         animate={{ 
-          color: (isTop || inWordZone) ? "#64748b" : "rgba(71, 85, 105, 0.7)" 
+          color: (isTop || inWordZone) ? "#64748b" : "rgba(71, 85, 105, 0.9)" 
         }}
         transition={{ duration: 0.2, delay: isTop && !inWordZone ? 0.15 : 0 }}
       >
         {letter.points}
       </motion.span>
+      
     </motion.button>
   )
 }
