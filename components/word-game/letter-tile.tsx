@@ -28,11 +28,14 @@ export function LetterTile({
       onClick={onClick}
       disabled={!isTop && !inWordZone}
       className={cn(
-        "relative flex items-center justify-center rounded-lg sm:rounded-xl font-sans",
-        // MAGIA RESPONSIVE:
-        // Usamos vw (viewport width) en móvil para que 8 columnas entren siempre perfectas
-        // Limitamos a max-h-12 para que no crezcan demasiado, y en 'sm' y 'md' volvemos a píxeles fijos
-        "h-[11vw] w-[11vw] max-h-12 max-w-12 min-h-9 min-w-9 sm:h-12 sm:w-12 md:h-14 md:w-14",
+        "relative flex items-center justify-center rounded-lg font-sans", // sm:rounded-xl quitado para que cuadren mejor
+        
+        // --- LA CLAVE ESTÁ AQUÍ ---
+        // Para que quepan 9 columnas en un iPhone: 
+        // 9.5vw * 9 = 85.5% del ancho de la pantalla (deja 14.5% para los 8 huecos y márgenes)
+        // Reducimos max-h y max-w a 10 (40px) en móvil, pero mantenemos grandes (12/14) en tablets/PC
+        "h-[9.5vw] w-[9.5vw] max-h-10 max-w-10 min-h-[32px] min-w-[32px] sm:max-h-12 sm:max-w-12 sm:h-12 sm:w-12 md:h-14 md:w-14",
+        
         isTop || inWordZone
           ? `cursor-pointer ${activeBg} hover:-translate-y-0.5 active:translate-y-1 active:shadow-none`
           : `cursor-not-allowed ${inactiveBg}`,
@@ -55,8 +58,8 @@ export function LetterTile({
       <motion.span 
         className={cn(
           "font-extrabold uppercase",
-          // Letra un poco más moderada en móvil (text-lg/1.1rem) para que quepa bien
-          "text-[1.1rem] sm:text-2xl md:text-[28px]"
+          // Letra adaptada al nuevo tamaño más compacto: text-lg en lugar de text-xl
+          "text-lg sm:text-2xl md:text-[28px]"
         )}
         animate={{ 
           color: (isTop || inWordZone) ? "#0f172a" : "rgba(15, 23, 42, 0.8)" 
@@ -69,8 +72,8 @@ export function LetterTile({
       <motion.span 
         className={cn(
           "absolute font-bold leading-none",
-          // Puntuación: pegada literalmente a los bordes derecho y bottom en móvil (right-[3px])
-          "bottom-[2px] right-[3px] text-[10px] sm:bottom-1 sm:right-1 sm:text-[11px] md:text-xs"
+          // Puntuación pegada a los bordes
+          "bottom-[2px] right-[3px] text-[9px] sm:bottom-1 sm:right-1 sm:text-[11px] md:text-xs"
         )}
         animate={{ 
           color: (isTop || inWordZone) ? "#64748b" : "rgba(71, 85, 105, 0.7)" 
