@@ -10,7 +10,9 @@ export async function GET() {
     return new NextResponse(content, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "public, max-age=31536000, immutable",
+        // Cambiado: Ahora obliga a validar si el archivo cambió,
+        // pero permite cachear en el cliente durante 1 hora para buen rendimiento.
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
       },
     })
   } catch (error) {
