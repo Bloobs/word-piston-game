@@ -61,7 +61,7 @@
       "title": "Acerca de PalabraMaster: El mejor juego de palabras",
       "intro": "Bienvenido a PalabraMaster, un adictivo rompecabezas diseñado para poner a prueba tu vocabulario y agilidad mental. En este juego HTML5, tu objetivo principal es formar las palabras más largas posibles utilizando las letras disponibles en el tablero. Ideal para ejercitar la mente de forma casual y divertida.",
       "how_to_play": "Cómo jugar y Reglas Básicas",
-      "instructions": "Para jugar, simplemente desliza o haz clic sobre las letras adyacentes para conectar y formar palabras válidas en español. Cuanto más larga sea la palabra, mayor será tu puntuación. No hay límite de tiempo en el modo clásico, lo que te permite pensar estratégicamente tus movimientos para despejar el tablero.",
+      "instructions": "Para jugar, simplemente desliza o haz clic sobre las letras adyacentes para conectarlas y formar palabras válidas. Cuanto más larga sea la palabra, mayor será tu puntuación. No hay límite de tiempo, lo que te permite pensar estratégicamente tus movimientos para despejar el tablero. El juego termina automáticamente cuando ya no hay más palabras posibles para construir. Por lo tanto, si la partida no ha terminado, ¡significa que todavía queda alguna palabra oculta! Si te quedas en blanco, puedes pulsar el botón de 'Pista' para revelar una palabra que se puede formar a cambio de ver un breve anuncio.",
       "scoring_title": "Sistema de Puntuación y Bonificaciones",
       "scoring_desc": "La clave para dominar PalabraMaster es buscar las palabras más largas, ya que el sistema recompensa significativamente la longitud:",
       "bonus_6": "+5 puntos de bonificación por palabras de 6 letras.",
