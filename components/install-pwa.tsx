@@ -3,20 +3,20 @@
 import { useState, useEffect } from "react"
 import { Download, Share, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useTranslations } from "@/hooks/use-translations" // Ajusta la ruta a tu hook
+import { useTranslations } from "@/hooks/use-translations" // Ajusta la ruta si es distinta
+import { useWordGame } from "@/hooks/use-word-game" // Importamos tu hook del juego
 
-interface InstallPWAProps {
-  lang: "es" | "en"
-}
+export function InstallPWA() {
+  // 1. Obtenemos el idioma actual directamente del estado de tu juego
+  const { state } = useWordGame()
+  
+  // 2. Pasamos ese idioma al traductor
+  const t = useTranslations(state.language)
 
-export function InstallPWA({ lang }: InstallPWAProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [isIOS, setIsIOS] = useState(false)
-  const [isStandalone, setIsStandalone] = useState(true)
+  const [isStandalone, setIsStandalone] = useState(true) 
   const [showBanner, setShowBanner] = useState(false)
-  
-  // Instanciamos los mensajes según el idioma
-  const t = useTranslations(lang)
 
   useEffect(() => {
     const isApp = window.matchMedia("(display-mode: standalone)").matches || 
@@ -29,14 +29,18 @@ export function InstallPWA({ lang }: InstallPWAProps) {
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent)
     setIsIOS(isIosDevice)
 
+    // Estrategia de monetización: Retrasamos 3 segundos la aparición en iOS 
+    // para no asustar al jugador nada más entrar.
     if (isIosDevice) {
-      setShowBanner(true)
+      const timer = setTimeout(() => setShowBanner(true), 3000)
+      return () => clearTimeout(timer)
     }
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e)
-      setShowBanner(true)
+      // En Android/PC también le damos 3 segundos de respiro
+      setTimeout(() => setShowBanner(true), 3000)
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
