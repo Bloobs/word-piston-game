@@ -320,6 +320,7 @@ function getDefinition(word: string): string {
 }
 
 function calculateBonus(wordLength: number): number {
+  if (wordLength >= 10) return 50
   if (wordLength >= 9) return 25
   if (wordLength >= 8) return 15
   if (wordLength >= 7) return 10

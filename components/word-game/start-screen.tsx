@@ -178,6 +178,10 @@ export function StartScreen({
               const nextLanguage = val as "es" | "en"
               setLanguage(nextLanguage)
               onLanguageChange?.(nextLanguage)
+
+             // 2. AÑADE ESTAS DOS LÍNEAS PARA EL SEO-ARTICLE:
+              localStorage.setItem("palabramaster-lang", nextLanguage)
+              window.dispatchEvent(new Event("languageChanged"))
             }}
           >
             <SelectTrigger className="w-32">

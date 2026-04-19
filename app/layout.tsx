@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { InstallPWA } from "@/components/install-pwa"
 import { NetworkMonitor } from "@/components/network-monitor"
+import { SeoArticle } from "@/components/seo-article"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -88,12 +89,20 @@ export default function RootLayout({
           }}
         />
 
-        {children}
+        {/* 1. CONTENEDOR PRINCIPAL DEL JUEGO */}
+        {/* Ocupa el 100% de la pantalla para aislar el juego y ocultar el SEO */}
+        <main className="min-h-[100dvh] w-full flex flex-col relative z-10">
+          {children}
+        </main>
+
+        {/* 2. COMPONENTE SEO MULTIDIOMA PARA ADSENSE */}
+        {/* Queda oculto debajo del menú de juego */}
+        <SeoArticle />
+
         {process.env.NODE_ENV === "production" && <Analytics />}
 
-        {/* AQUÍ AÑADIMOS EL BANNER DE INSTALACIÓN PWA */}
+        {/* COMPONENTES GLOBALES SECUNDARIOS */}
         <InstallPWA />
-
         <NetworkMonitor />
         
       </body>

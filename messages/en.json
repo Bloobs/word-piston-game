@@ -56,5 +56,20 @@
     "iosAdd": "\"Add to Home Screen\"",
     "desktopDesc": "Play in full screen and enter with just one tap.",
     "installBtn": "Install"
-  }
+  },
+  "seo_article": {
+      "title": "About PalabraMaster: The Ultimate Word Game",
+      "intro": "Welcome to PalabraMaster, an addictive puzzle game designed to test your vocabulary and mental agility. In this HTML5 game, your main goal is to form the longest possible words using the available letters on the board. Perfect for casual, fun brain training.",
+      "how_to_play": "How to Play & Basic Rules",
+      "instructions": "To play, simply swipe or click on adjacent letters to connect them and form valid words. The longer the word, the higher your score. There is no time limit in classic mode, allowing you to strategically plan your moves to clear the board.",
+      "scoring_title": "Scoring System and Bonuses",
+      "scoring_desc": "The key to mastering PalabraMaster is finding the longest words, as the system heavily rewards length:",
+      "bonus_6": "+5 bonus points for 6-letter words.",
+      "bonus_7": "+10 bonus points for 7-letter words.",
+      "bonus_8": "+15 bonus points for 8-letter words.",
+      "bonus_9": "+25 bonus points for 9-letter words.",
+      "bonus_10": "+50 bonus points for 10-letter or longer words.",
+      "bonus_clearfull": "+100 bonus points if you clear the board.",
+      "conclusion": "Enjoy PalabraMaster on any device—mobile, tablet, or desktop. Install our Progressive Web App (PWA) to play offline and keep your progress safe!"
+    }
 }
