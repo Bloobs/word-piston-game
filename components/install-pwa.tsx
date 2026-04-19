@@ -10,6 +10,17 @@ export function InstallPWA() {
   // 1. Obtenemos el idioma actual directamente del estado de tu juego
   const { state } = useWordGame()
   
+ // 1. AÑADIMOS ESTOS LOGS PARA DEPURAR
+ console.log("=== DEBUG PWA BANNER ===")
+ console.log("Estado completo del juego:", state)
+ console.log("Idioma detectado por la PWA:", state?.language)
+ 
+ // 2. Comprobación de seguridad por si el estado no ha cargado
+ const currentLanguage = state?.language || "es"
+ console.log("Idioma final usado para traducir:", currentLanguage)
+ console.log("========================")
+
+
   // 2. Pasamos ese idioma al traductor
   const t = useTranslations(state.language)
 
