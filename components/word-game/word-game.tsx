@@ -32,6 +32,19 @@ function getCountryFromBrowserLocale(): string {
   return "US"
 }
 
+function getLanguageFromBrowserLocale(): "es" | "en" {
+  if (typeof navigator === "undefined") return "es" // Por defecto en servidor/si falla
+
+  const browserLang = navigator.language || (navigator as any).userLanguage
+  // Si empieza por "en" (como en-US, en-GB, en), devolvemos "en"
+  if (browserLang && browserLang.toLowerCase().startsWith("en")) {
+    return "en"
+  }
+  
+  // Por defecto para España, LATAM o cualquier otro idioma no contemplado
+  return "es" 
+}
+
 type AdBreakBeforeRewardFn = (showAdFn: () => void) => void
 
 type AdBreakOptions = {
@@ -70,6 +83,17 @@ export function WordGame() {
 
   const [isHintModalOpen, setIsHintModalOpen] = useState(false)
   const [isProcessingHintAd, setIsProcessingHintAd] = useState(false)
+
+  // NUEVO: Efecto para detectar y configurar el idioma por defecto al arrancar
+  useEffect(() => {
+      // Solo queremos hacerlo una vez al cargar la página por primera vez
+      // y solo si el idioma inicial que queremos es distinto al que ya tiene el state
+    const detectedLanguage = getLanguageFromBrowserLocale()
+    if (state.language !== detectedLanguage) {
+        actions.setLanguage(detectedLanguage)
+    }
+  }, []) // Pasamos actions como dependencia (o déjalo vacío [] si tu linter te lo permite)
+  
 
   // Cargar rankings reales al arrancar (ambos idiomas)
   useEffect(() => {
