@@ -1,8 +1,10 @@
 import { MetadataRoute } from 'next'
 import { headers } from 'next/headers'
 
-export default function manifest(): MetadataRoute.Manifest {
-  const headersList = headers()
+// Añadimos 'async' aquí
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  // Añadimos 'await' aquí
+  const headersList = await headers()
   const acceptLanguage = headersList.get('accept-language') || ''
   
   const isEnglish = acceptLanguage.toLowerCase().startsWith('en')
