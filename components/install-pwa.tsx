@@ -3,50 +3,82 @@
 import { useState, useEffect } from "react"
 import { Download, Share, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useTranslations } from "@/hooks/use-translations" // Ajusta la ruta si es distinta
-import { useWordGame } from "@/hooks/use-word-game" // Importamos tu hook del juego
+import { useTranslations } from "@/hooks/use-translations"
 
 export function InstallPWA() {
-  // 1. Obtenemos el idioma actual directamente del estado de tu juego
-  const { state } = useWordGame()
-  
- // 1. AÑADIMOS ESTOS LOGS PARA DEPURAR
- console.log("=== DEBUG PWA BANNER ===")
- console.log("Estado completo del juego:", state)
- console.log("Idioma detectado por la PWA:", state?.language)
- 
- // 2. Comprobación de seguridad por si el estado no ha cargado
- const currentLanguage = state?.language || "es"
- console.log("Idioma final usado para traducir:", currentLanguage)
- console.log("========================")
+  // 1. Estado para el idioma, por defecto en español
+  const [lang, setLang] = useState<"es" | "en">("es")
 
+  // 2. Efecto para detectar y actualizar el idioma de forma independiente
+  useEffect(() => {
+    const detectRealLanguage = (): "es" | "en" => {
+      // Intentamos leer el localStorage donde tu juego guarda la preferencia
+      const storedLang = localStorage.getItem("language") || 
+                         localStorage.getItem("word-game-storage") ||
+                         localStorage.getItem("game-lang");
+      
+      if (storedLang && storedLang.includes("en")) {
+        return "en";
+      }
 
-  // 2. Pasamos ese idioma al traductor
-  const t = useTranslations(state.language)
+      // Si no hay nada guardado, detectamos el idioma del navegador (Tier 1)
+      const browserLang = navigator.language || (navigator as any).userLanguage;
+      if (browserLang && browserLang.toLowerCase().startsWith("en")) {
+        return "en";
+      }
 
+      return "es";
+    }
+
+    // Configuramos el idioma inicial
+    setLang(detectRealLanguage());
+
+    // Revisamos cada segundo si el jugador ha cambiado el idioma en el dropdown.
+    // Al estar fuera del Provider del juego, esta es la forma más limpia de reaccionar.
+    const intervalId = setInterval(() => {
+      const currentRealLang = detectRealLanguage();
+      setLang((prevLang) => {
+        if (prevLang !== currentRealLang) {
+          return currentRealLang;
+        }
+        return prevLang;
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [])
+
+  // 3. Obtenemos las traducciones reactivas basadas en el idioma detectado
+  const t = useTranslations(lang)
+
+  // 4. Estados de la PWA
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [isIOS, setIsIOS] = useState(false)
-  const [isStandalone, setIsStandalone] = useState(true) 
+  const [isStandalone, setIsStandalone] = useState(true) // True por defecto para evitar parpadeos
   const [showBanner, setShowBanner] = useState(false)
 
+  // 5. Efecto para manejar la lógica de instalación PWA
   useEffect(() => {
+    // Comprobar si ya está instalada (Standalone)
     const isApp = window.matchMedia("(display-mode: standalone)").matches || 
                   (window.navigator as any).standalone === true;
     setIsStandalone(isApp);
 
     if (isApp) return;
 
+    // Detectar iOS
     const userAgent = window.navigator.userAgent.toLowerCase()
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent)
     setIsIOS(isIosDevice)
 
     // Estrategia de monetización: Retrasamos 3 segundos la aparición en iOS 
-    // para no asustar al jugador nada más entrar.
+    // para que el jugador vea el menú antes de pedirle la instalación.
     if (isIosDevice) {
       const timer = setTimeout(() => setShowBanner(true), 3000)
       return () => clearTimeout(timer)
     }
 
+    // Capturar el evento de instalación nativo en Android/PC
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e)
@@ -64,17 +96,24 @@ export function InstallPWA() {
   const handleInstallClick = async () => {
     if (!deferredPrompt) return
 
+    // Muestra el aviso nativo de instalación del sistema
     deferredPrompt.prompt()
 
+    // Esperamos a ver qué elige el usuario
     const { outcome } = await deferredPrompt.userChoice
     if (outcome === "accepted") {
       setShowBanner(false)
     }
     
+    // Limpiamos el evento
     setDeferredPrompt(null)
   }
 
+  // Si ya está instalada o cerramos el banner, no mostramos nada
   if (isStandalone || !showBanner) return null
+
+  // Protección de seguridad por si las traducciones no han cargado
+  if (!t || !t.pwa) return null
 
   return (
     <AnimatePresence>
