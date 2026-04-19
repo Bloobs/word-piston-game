@@ -128,6 +128,9 @@ export function WordGame() {
 
     setIsSaving(true)
 
+    // AÑADIDO: Console.log para ver las palabras en las DevTools (F12)
+    console.log(`[PalabraMaster] Guardando récord de ${cleanName} con palabras:`, state.foundWords)
+
     try {
       const response = await fetch('/api/ranking', {
         method: 'POST',
@@ -136,7 +139,8 @@ export function WordGame() {
           name: cleanName,
           country: selectedCountry,
           score: state.totalScore,
-          lang: state.language // ¡Enviamos el idioma en el que ha jugado!
+          lang: state.language,
+          words: state.foundWords // AÑADIDO: Se envía el array de palabras
         })
       })
 
@@ -153,7 +157,12 @@ export function WordGame() {
     } catch (error) {
       console.error("Error saving record:", error)
       setRankingByLanguage((prev) => {
-        const updated = [...prev[state.language], { name: cleanName, country: selectedCountry, score: state.totalScore }]
+        const updated = [...prev[state.language], { 
+          name: cleanName, 
+          country: selectedCountry, 
+          score: state.totalScore,
+          words: state.foundWords // AÑADIDO: Almacenado local en caso de fallo
+        } as RankingEntry] // Forzamos el casteo en caso de que TS se queje si RankingEntry aún no tiene 'words'
           .sort((a, b) => b.score - a.score)
           .slice(0, 25)
         return { ...prev, [state.language]: updated }

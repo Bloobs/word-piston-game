@@ -141,6 +141,7 @@ export interface Letter {
 export interface GameState {
   columns: Letter[][]
   wordZone: Letter[]
+  foundWords: string[] // <--- AÑADIDO
   partialScore: number
   totalScore: number
   gameStarted: boolean
@@ -162,7 +163,6 @@ let spanishDictionary: Map<string, string> | null = null
 let dictionaryLoadPromise: Promise<Map<string, string>> | null = null
 let englishDictionary: Set<string> | null = null
 let englishDictionaryLoadPromise: Promise<Set<string>> | null = null
-
 
 async function loadSpanishDictionary(): Promise<Map<string, string>> {
   if (spanishDictionary) return spanishDictionary
@@ -389,6 +389,7 @@ export function useWordGame() {
   const [state, setState] = useState<GameState>({
     columns: [],
     wordZone: [],
+    foundWords: [], // <--- AÑADIDO
     partialScore: 0,
     totalScore: 0,
     gameStarted: false,
@@ -429,6 +430,7 @@ export function useWordGame() {
     setState((prev) => ({
       columns: generateInitialColumns(language),
       wordZone: [],
+      foundWords: [], // <--- AÑADIDO
       partialScore: 0,
       totalScore: 0,
       gameStarted: true,
@@ -537,9 +539,12 @@ export function useWordGame() {
       const newTotalScore = prev.totalScore + wordPoints + clearBonus
       const noMoreMoves = checkNoMoreMoves(prev.columns, prev.language)
 
+      const newFoundWords = [...prev.foundWords, realWord] // <--- AÑADIDO
+
       return {
         ...prev,
         wordZone: [],
+        foundWords: newFoundWords, // <--- AÑADIDO
         totalScore: newTotalScore,
         lastValidWord: realWord,
         lastWordPoints: wordPoints,
@@ -587,6 +592,7 @@ export function useWordGame() {
     setState((prev) => ({
       columns: [],
       wordZone: [],
+      foundWords: [], // <--- AÑADIDO
       partialScore: 0,
       totalScore: 0,
       gameStarted: false,
