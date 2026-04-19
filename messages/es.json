@@ -47,5 +47,15 @@
     "nicknamePlaceholder": "Escribe tu nickname",
     "saveRecord": "Guardar en ranking",
     "recordSaved": "Récord guardado correctamente."
+  },
+  "pwa": {
+      "title": "Instala Palabra Master",
+      "iosPart1": "Para instalar la app, pulsa el botón ",
+      "iosShare": "Compartir",
+      "iosPart2": " de la barra de Safari y luego ",
+      "iosAdd": "\"Añadir a la pantalla de inicio\"",
+      "desktopDesc": "Juega a pantalla completa y entra con un toque.",
+      "installBtn": "Instalar"
   }
+  
 }

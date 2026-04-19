@@ -3,36 +3,38 @@
 import { useState, useEffect } from "react"
 import { Download, Share, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useTranslations } from "@/hooks/use-translations" // Ajusta la ruta a tu hook
 
-export function InstallPWA() {
+interface InstallPWAProps {
+  lang: "es" | "en"
+}
+
+export function InstallPWA({ lang }: InstallPWAProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
   const [isIOS, setIsIOS] = useState(false)
-  const [isStandalone, setIsStandalone] = useState(true) // Por defecto true para evitar parpadeos
+  const [isStandalone, setIsStandalone] = useState(true)
   const [showBanner, setShowBanner] = useState(false)
+  
+  // Instanciamos los mensajes según el idioma
+  const t = useTranslations(lang)
 
   useEffect(() => {
-    // 1. Comprobar si ya está instalada (Standalone)
     const isApp = window.matchMedia("(display-mode: standalone)").matches || 
                   (window.navigator as any).standalone === true;
     setIsStandalone(isApp);
 
     if (isApp) return;
 
-    // 2. Detectar iOS
     const userAgent = window.navigator.userAgent.toLowerCase()
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent)
     setIsIOS(isIosDevice)
 
     if (isIosDevice) {
-      // Si es iOS, mostramos el banner con instrucciones
       setShowBanner(true)
     }
 
-    // 3. Capturar el evento de instalación nativo en Android/PC
     const handleBeforeInstallPrompt = (e: Event) => {
-      // Previene que aparezca la barrita fea por defecto de Chrome
       e.preventDefault()
-      // Guardamos el evento para poder dispararlo luego con nuestro botón
       setDeferredPrompt(e)
       setShowBanner(true)
     }
@@ -47,20 +49,16 @@ export function InstallPWA() {
   const handleInstallClick = async () => {
     if (!deferredPrompt) return
 
-    // Muestra el aviso nativo de instalación del sistema
     deferredPrompt.prompt()
 
-    // Esperamos a ver qué elige el usuario
     const { outcome } = await deferredPrompt.userChoice
     if (outcome === "accepted") {
       setShowBanner(false)
     }
     
-    // Limpiamos el evento
     setDeferredPrompt(null)
   }
 
-  // Si ya está instalada o cerramos el banner, no mostramos nada
   if (isStandalone || !showBanner) return null
 
   return (
@@ -85,21 +83,24 @@ export function InstallPWA() {
           
           <div className="flex-1">
             <h4 className="font-bold text-slate-200">
-              Instala Palabra Master
+              {t.pwa.title}
             </h4>
             
             {isIOS ? (
               <p className="mt-1 text-sm leading-relaxed text-slate-400">
-                Para instalar la app, pulsa el botón <strong>Compartir</strong> de la barra de Safari y luego <strong>"Añadir a la pantalla de inicio"</strong>.
+                {t.pwa.iosPart1}
+                <strong>{t.pwa.iosShare}</strong>
+                {t.pwa.iosPart2}
+                <strong>{t.pwa.iosAdd}</strong>.
               </p>
             ) : (
               <div className="mt-2 flex items-center justify-between">
-                <p className="text-sm text-slate-400">Juega a pantalla completa y entra con un toque.</p>
+                <p className="text-sm text-slate-400">{t.pwa.desktopDesc}</p>
                 <button
                   onClick={handleInstallClick}
                   className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white shadow-md hover:bg-emerald-500 active:scale-95 transition-all"
                 >
-                  Instalar
+                  {t.pwa.installBtn}
                 </button>
               </div>
             )}

@@ -47,5 +47,14 @@
     "nicknamePlaceholder": "Type your nickname",
     "saveRecord": "Save to ranking",
     "recordSaved": "Score saved successfully."
+  },
+  "pwa": {
+    "title": "Install Word Master",
+    "iosPart1": "To install the app, tap the ",
+    "iosShare": "Share",
+    "iosPart2": " button on Safari's menu, then tap ",
+    "iosAdd": "\"Add to Home Screen\"",
+    "desktopDesc": "Play in full screen and enter with just one tap.",
+    "installBtn": "Install"
   }
 }
