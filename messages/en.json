@@ -71,5 +71,63 @@
       "bonus_10": "+50 bonus points for 10-letter or longer words.",
       "bonus_clearfull": "+100 bonus points if you clear the board.",
       "conclusion": "Enjoy PalabraMaster on any device—mobile, tablet, or desktop. Install our Progressive Web App (PWA) to play offline and keep your progress safe!"
-    }
+    },
+  "guide": {
+    "back_button": "Back to game",
+    "title": "Master Guide: How to Dominate PalabraMaster",
+    "intro_title": "The Power of Word Games",
+    "intro_text": "PalabraMaster is a cognitive training tool designed to improve lexical retrieval and mental agility. We aim to combine puzzle fun with the intellectual challenge of forming words under pressure.",
+    "mechanics_title": "Game Mechanics",
+    "mechanics_desc": "The board features 9 columns of letters acting as a stack. Click top-row letters to move them to the creation zone and build words. The game ends when no more words are possible or if you clear the entire board, earning a 100-point bonus.",
+    "scoring_title": "Scoring and Bonuses",
+    "scoring_desc": "Points are awarded based on word length:",
+    "bonus_list": [
+      "6 letters: 5 extra points",
+      "7 letters: 10 extra points",
+      "8 letters: 15 extra points",
+      "9 letters: 25 extra points",
+      "10+ letters: 50 extra points"
+    ],
+    "submit_title": "Accumulating Points",
+    "submit_desc": "Once a valid word is formed, the 'Submit' button turns green. Click it to remove letters from the board and add points to your total score.",
+    "hints_title": "Stuck? Use Hints",
+    "hints_desc": "If you are stuck, use the 'Hint' button. The game will highlight possible combinations to help you continue. This feature requires watching a short ad, allowing us to keep the game free.",
+    "leaderboard_title": "Global Leaderboards",
+    "leaderboard_desc": "We maintain independent global rankings for English and Spanish, showing the top 25 players. If you reach the top 25, you can register your nickname and nationality to see your position.",
+    "strategies_title": "Pro Level Strategies",
+    "strat_1_title": "Vowel Management",
+    "strat_1_desc": "Don't exhaust your vowels early; save them for connecting complex consonants or forming long words.",
+    "strat_2_title": "Peripheral Vision",
+    "strat_2_desc": "Train your eye to spot three-letter patterns before forming the full word.",
+    "strat_3_title": "Aim for Clearance",
+    "strat_3_desc": "Prioritize clearing the entire board to earn the maximum 100-point bonus."
+  },
+  "footer": {
+    "home": "Home",
+    "guide": "Strategy Guide",
+    "privacy": "Privacy Policy",
+    "copyright": "Your daily vocabulary training."
+  },
+  "privacy": {
+    "back_button": "Back to game",
+    "title": "Privacy and Cookie Policy",
+    "last_updated": "Last updated: April 2026",
+    "section1_title": "1. General Information",
+    "section1_text": "At PalabraMaster, we respect your privacy and are committed to protecting our users' data.",
+    "section2_title": "2. Data We Collect",
+    "section2_text": "PalabraMaster does not require registration or collect personal data directly. All game progress is saved locally.",
+    "section2_subtext": "We use third-party services that may collect anonymous information:",
+    "section2_list1": "To measure site traffic and performance.",
+    "section2_list2": "To show advertisements that fund the maintenance of the game.",
+    "section3_title": "3. Use of Cookies and Google AdSense",
+    "section3_text": "Our website uses cookies to improve the user experience and show relevant advertising.",
+    "section3_list1": "Third-party vendors use cookies to serve ads based on prior visits.",
+    "section3_list2": "Allows serving ads based on browsing behavior.",
+    "section3_list3": "You can opt out of personalized advertising by visiting the",
+    "link_text": "Google Ad Settings",
+    "section4_title": "4. User Rights (GDPR)",
+    "section4_text": "If you are in the EEA, you have the right to configure the use of non-essential cookies via the consent banner.",
+    "section5_title": "5. Contact",
+    "section5_text": "If you have any questions, you can contact us by sending an email to:"
+  }
 }

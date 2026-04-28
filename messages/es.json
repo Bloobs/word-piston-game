@@ -71,5 +71,64 @@
       "bonus_10": "+50 puntos de bonificación por palabras de 10 letras o más.",
       "bonus_clearfull": "+100 puntos de bonificación si al terminar el juego no queda ninguna letra.",
       "conclusion": "Disfruta de PalabraMaster en cualquier dispositivo, ya sea móvil, tablet o escritorio. ¡Instala nuestra aplicación web progresiva (PWA) para jugar sin conexión y no perder tu progreso!"
+    },
+    "guide": {
+      "back_button": "Volver al juego",
+      "title": "Guía Maestra: Cómo Dominar PalabraMaster",
+      "intro_title": "El Poder de los Juegos de Letras",
+      "intro_text": "PalabraMaster es una herramienta de entrenamiento cognitivo diseñada para mejorar la recuperación léxica y la agilidad mental. Nuestro objetivo es combinar la diversión de un puzzle con el desafío intelectual de formar palabras bajo presión.",
+      "mechanics_title": "Mecánicas del Juego",
+      "mechanics_desc": "El tablero consta de 9 columnas de letras que actúan como una pila. Tu objetivo es hacer clic en las letras de la fila superior para enviarlas a la zona de creación, donde construirás palabras para sumar puntos. El juego finaliza si se agotan las combinaciones posibles o si logras despejar todo el tablero, obteniendo un bonus de 100 puntos.",
+      "scoring_title": "Sistema de Puntuación y Bonus",
+      "scoring_desc": "La puntuación se calcula basándose en la longitud de las palabras creadas:",
+      "bonus_list": [
+        "6 caracteres: 5 puntos extra",
+        "7 caracteres: 10 puntos extra",
+        "8 caracteres: 15 puntos extra",
+        "9 caracteres: 25 puntos extra",
+        "10+ caracteres: 50 puntos extra"
+      ],
+      "submit_title": "Cómo acumular puntos",
+      "submit_desc": "Una vez formada una palabra válida, el botón 'Acumular' se iluminará en verde. Al pulsarlo, las letras se eliminan del tablero y los puntos se suman a tu marcador total.",
+      "hints_title": "¿Atascado? Usa Pistas",
+      "hints_desc": "Si te quedas bloqueado, puedes usar el botón de 'Pista'. El juego resaltará posibles combinaciones para ayudarte a continuar. Esta función requiere visualizar un breve anuncio, lo que nos permite mantener el juego gratuito para todos.",
+      "leaderboard_title": "Records Mundiales",
+      "leaderboard_desc": "Mantenemos tablas de clasificación globales independientes para español e inglés, con los 25 mejores jugadores. Al terminar, si alcanzas el top 25, podrás registrar tu nickname y nacionalidad para ver tu posición en el ranking mundial.",
+      "strategies_title": "Estrategias de Nivel Pro",
+      "strat_1_title": "Gestión de Vocales",
+      "strat_1_desc": "No agotes tus vocales rápidamente; resérvalas para conectar consonantes complejas o formar palabras largas.",
+      "strat_2_title": "Visión Periférica",
+      "strat_2_desc": "Entrena tu ojo para detectar patrones de tres letras antes de intentar formar la palabra completa.",
+      "strat_3_title": "Busca la Limpieza",
+      "strat_3_desc": "Prioriza despejar el tablero por completo para obtener el bonus máximo de 100 puntos."
+  },
+  "footer": {
+    "home": "Inicio",
+    "guide": "Guía de Estrategia",
+    "privacy": "Política de Privacidad",
+    "copyright": "Tu entrenamiento diario de vocabulario."
+  },
+  "privacy": {
+      "back_button": "Volver al juego",
+      "title": "Política de Privacidad y Cookies",
+      "last_updated": "Última actualización: Abril de 2026",
+      "section1_title": "1. Información General",
+      "section1_text": "En PalabraMaster, respetamos tu privacidad y estamos comprometidos a proteger los datos de nuestros usuarios.",
+      "section2_title": "2. Datos que recopilamos",
+      "section2_text": "PalabraMaster no requiere registro ni recopila datos personales directamente. Todo el progreso del juego se guarda de forma local.",
+      "section2_subtext": "Utilizamos servicios de terceros que pueden recopilar información anónima:",
+      "section2_list1": "Para medir el tráfico y rendimiento del sitio.",
+      "section2_list2": "Para mostrar anuncios publicitarios que financian el mantenimiento del juego.",
+      "section3_title": "3. Uso de Cookies y Google AdSense",
+      "section3_text": "Nuestro sitio web utiliza cookies para mejorar la experiencia y mostrar publicidad relevante.",
+      "section3_list1": "Los proveedores utilizan cookies para mostrar anuncios basados en visitas anteriores.",
+      "section3_list2": "Permite mostrar anuncios basados en el comportamiento de navegación.",
+      "section3_list3": "Puedes inhabilitar la publicidad personalizada visitando la",
+      "link_text": "Configuración de anuncios de Google",
+      "section4_title": "4. Derechos del usuario (RGPD)",
+      "section4_text": "Si te encuentras en el EEE, tienes derecho a configurar el uso de cookies no esenciales a través del banner de consentimiento.",
+      "section5_title": "5. Contacto",
+      "section5_text": "Si tienes dudas, puedes contactarnos enviando un correo electrónico a:"
     }
+
 }

@@ -6,6 +6,9 @@ import "./globals.css"
 import { InstallPWA } from "@/components/install-pwa"
 import { NetworkMonitor } from "@/components/network-monitor"
 import { SeoArticle } from "@/components/seo-article"
+import { SiteFooter } from "@/components/site-footer"
+import { ScrollToTop } from "@/components/scroll-to-top"; // Importa el nuevo componente
+
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -97,7 +100,11 @@ export default function RootLayout({
 
         {/* 2. COMPONENTE SEO MULTIDIOMA PARA ADSENSE */}
         {/* Queda oculto debajo del menú de juego */}
+        <ScrollToTop /> {/* Añádelo aquí, debajo de la etiqueta body */}
+
         <SeoArticle />
+
+        <SiteFooter />
 
         {process.env.NODE_ENV === "production" && <Analytics />}
 
