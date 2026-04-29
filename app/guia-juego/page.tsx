@@ -2,40 +2,16 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useLanguage } from "@/components/language-provider"
 import es from "@/messages/es.json"
 import en from "@/messages/en.json"
 
 export default function GuiaJuego() {
-  const [lang, setLang] = useState<"es" | "en">("es")
+  const { lang } = useLanguage()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // 1. Detección inicial
-    const savedLang = localStorage.getItem("palabramaster-lang")
-    if (savedLang === "en" || savedLang === "es") {
-      setLang(savedLang)
-    } else {
-      const browserLang = navigator.language || (navigator as any).userLanguage
-      // Corregido: pasamos el string literal "en", no el objeto importado
-      if (browserLang && browserLang.toLowerCase().startsWith("en")) {
-        setLang("en")
-      } else {
-        setLang("es")
-      }
-    }
-    
     setMounted(true)
-
-    // 2. Escuchar cambios de idioma
-    const handleGlobalLanguageChange = () => {
-      const currentLang = localStorage.getItem("palabramaster-lang")
-      if (currentLang === "en" || currentLang === "es") {
-        setLang(currentLang)
-      }
-    }
-
-    window.addEventListener("languageChanged", handleGlobalLanguageChange)
-    return () => window.removeEventListener("languageChanged", handleGlobalLanguageChange)
   }, [])
 
   const t = lang === "en" ? en.guide : es.guide

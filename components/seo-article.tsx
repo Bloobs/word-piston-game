@@ -2,43 +2,18 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useLanguage } from "@/components/language-provider"
 
 // Importa tus JSON de traducciones
 import es from "@/messages/es.json"
 import en from "@/messages/en.json"
 
 export function SeoArticle() {
-  const [lang, setLang] = useState<"es" | "en">("es")
+  const { lang } = useLanguage()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // 1. Detección inicial al cargar la página
-    const savedLang = localStorage.getItem("palabramaster-lang")
-    if (savedLang === "en" || savedLang === "es") {
-      setLang(savedLang)
-    } else {
-      // Si no hay idioma guardado, miramos el navegador
-      const browserLang = navigator.language || (navigator as any).userLanguage
-      if (browserLang && browserLang.toLowerCase().startsWith("en")) {
-        setLang("en")
-      }
-    }
-    
     setMounted(true)
-
-    // 2. Escuchar en tiempo real cuando el combo del juego cambia
-    const handleGlobalLanguageChange = () => {
-      const currentLang = localStorage.getItem("palabramaster-lang")
-      if (currentLang === "en" || currentLang === "es") {
-        setLang(currentLang)
-      }
-    }
-
-    // Nos suscribimos al evento personalizado que emitimos desde el combo
-    window.addEventListener("languageChanged", handleGlobalLanguageChange)
-    
-    // Limpieza del evento cuando se desmonta el componente
-    return () => window.removeEventListener("languageChanged", handleGlobalLanguageChange)
   }, [])
 
   // Asignamos las traducciones dinámicamente

@@ -7,7 +7,8 @@ import { InstallPWA } from "@/components/install-pwa"
 import { NetworkMonitor } from "@/components/network-monitor"
 import { SeoArticle } from "@/components/seo-article"
 import { SiteFooter } from "@/components/site-footer"
-import { ScrollToTop } from "@/components/scroll-to-top"; // Importa el nuevo componente
+import { ScrollToTop } from "@/components/scroll-to-top"
+import { LanguageProvider } from "@/components/language-provider"
 
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -67,6 +68,7 @@ export default function RootLayout({
         {/* Aquí NO van los scripts en Next.js */}
       </head>
       <body className="bg-background font-sans text-foreground antialiased" suppressHydrationWarning>
+        <LanguageProvider>
         
         {/* Script principal de AdSense usando next/script antes del contenido */}
         <Script
@@ -112,6 +114,7 @@ export default function RootLayout({
         <InstallPWA />
         <NetworkMonitor />
         
+        </LanguageProvider>
       </body>
     </html>
   )

@@ -2,39 +2,18 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useLanguage } from "@/components/language-provider"
 
 // Importa tus JSON de traducciones
 import es from "@/messages/es.json"
 import en from "@/messages/en.json"
 
 export function SiteFooter() {
-  const [lang, setLang] = useState<"es" | "en">("es")
+  const { lang } = useLanguage()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // 1. Detección inicial
-    const savedLang = localStorage.getItem("palabramaster-lang")
-    if (savedLang === "en" || savedLang === "es") {
-      setLang(savedLang)
-    } else {
-      const browserLang = navigator.language || (navigator as any).userLanguage
-      if (browserLang && browserLang.toLowerCase().startsWith("en")) {
-        setLang("en")
-      }
-    }
-    
     setMounted(true)
-
-    // 2. Escuchar cambios de idioma
-    const handleGlobalLanguageChange = () => {
-      const currentLang = localStorage.getItem("palabramaster-lang")
-      if (currentLang === "en" || currentLang === "es") {
-        setLang(currentLang)
-      }
-    }
-
-    window.addEventListener("languageChanged", handleGlobalLanguageChange)
-    return () => window.removeEventListener("languageChanged", handleGlobalLanguageChange)
   }, [])
 
   // Asignamos las traducciones dinámicamente

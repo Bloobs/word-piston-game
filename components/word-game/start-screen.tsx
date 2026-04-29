@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select"
 import { Trophy, Globe, Flag } from "lucide-react"
 import { useTranslations } from "@/hooks/use-translations"
+import { useLanguage } from "@/components/language-provider"
 
 export interface RankingEntry {
   name: string
@@ -90,12 +91,12 @@ export function StartScreen({
   onCountryChange,
   ranking, // Ahora es obligatorio y siempre viene del padre
 }: StartScreenProps) {
-  const [language, setLanguage] = useState<"es" | "en">(initialLanguage)
+  const { lang, setLang } = useLanguage()
   const [country, setCountry] = useState(initialCountry)
-  const t = useTranslations(language)
+  const t = useTranslations(lang)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [autoScrollComplete, setAutoScrollComplete] = useState(false)
-  const countryOptions = useMemo(() => buildCountryOptions(language), [language])
+  const countryOptions = useMemo(() => buildCountryOptions(lang), [lang])
 
   const safeCountryValue = useMemo(() => {
     const normalized = country.toUpperCase()
@@ -103,10 +104,6 @@ export function StartScreen({
       ? normalized
       : "US"
   }, [country, countryOptions])
-
-  useEffect(() => {
-    setLanguage(initialLanguage)
-  }, [initialLanguage])
 
   useEffect(() => {
     setCountry(initialCountry)
@@ -173,15 +170,11 @@ export function StartScreen({
         <div className="flex items-center gap-2">
           <Globe className="h-4 w-4 text-muted-foreground" />
           <Select
-            value={language}
+            value={lang}
             onValueChange={(val) => {
               const nextLanguage = val as "es" | "en"
-              setLanguage(nextLanguage)
+              setLang(nextLanguage)
               onLanguageChange?.(nextLanguage)
-
-             // 2. AÑADE ESTAS DOS LÍNEAS PARA EL SEO-ARTICLE:
-              localStorage.setItem("palabramaster-lang", nextLanguage)
-              window.dispatchEvent(new Event("languageChanged"))
             }}
           >
             <SelectTrigger className="w-32">
@@ -218,7 +211,7 @@ export function StartScreen({
 
       <Button
         size="lg"
-        onClick={() => onStartGame(language)}
+        onClick={() => onStartGame(lang)}
         disabled={Boolean(isDictionaryLoading)}
         className="h-14 px-12 text-lg font-semibold"
       >
@@ -272,7 +265,7 @@ export function StartScreen({
                   </span>
                 </div>
                 <span className="font-mono text-sm font-semibold text-primary">
-                  {player.score > 0 ? player.score.toLocaleString(language === "es" ? "es-ES" : "en-US") : ""}
+                  {player.score > 0 ? player.score.toLocaleString(lang === "es" ? "es-ES" : "en-US") : ""}
                 </span>
               </div>
             ))}
@@ -291,7 +284,7 @@ export function StartScreen({
               <path d="M26.2 15C26.2 15 28.5 15.1 29 17.2C29.4 19.1 28 21.6 24.5 21.9L24.8 13.9C24.8 13.9 26.2 13.9 26.2 15Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
               <path d="M12.6 13.5L13.1 7.2H21.9L22.4 13.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="text-sm">{language === "es" ? "Invítame a un café" : "Buy me a coffee"}</span>
+            <span className="text-sm">{lang === "es" ? "Invítame a un café" : "Buy me a coffee"}</span>
           </a>
         </div>
       </div>
