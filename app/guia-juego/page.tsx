@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { useLanguage } from "@/components/language-provider"
 import es from "@/messages/es.json"
 import en from "@/messages/en.json"
@@ -19,12 +18,8 @@ export default function GuiaJuego() {
   if (!mounted) return null
 
   return (
-    <main className="min-h-[100dvh] bg-background text-foreground flex flex-col items-center py-12 px-6">
+    <main className="min-h-[100dvh] bg-background text-foreground flex flex-col items-center py-12 px-6 pt-24">
       <div className="max-w-4xl w-full">
-        
-        <Link href="/" className="inline-block mb-8 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-          &larr; {t.back_button}
-        </Link>
 
         <h1 className="text-4xl font-bold mb-8 text-primary">{t.title}</h1>
         

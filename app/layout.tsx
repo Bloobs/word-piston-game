@@ -9,6 +9,8 @@ import { SeoArticle } from "@/components/seo-article"
 import { SiteFooter } from "@/components/site-footer"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { LanguageProvider } from "@/components/language-provider"
+import { Navigation } from "@/components/navigation"
+import { GameStateProvider } from "@/components/game-state-provider"
 
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -69,6 +71,8 @@ export default function RootLayout({
       </head>
       <body className="bg-background font-sans text-foreground antialiased" suppressHydrationWarning>
         <LanguageProvider>
+          <GameStateProvider>
+            <Navigation />
         
         {/* Script principal de AdSense usando next/script antes del contenido */}
         <Script
@@ -113,7 +117,7 @@ export default function RootLayout({
         {/* COMPONENTES GLOBALES SECUNDARIOS */}
         <InstallPWA />
         <NetworkMonitor />
-        
+          </GameStateProvider>
         </LanguageProvider>
       </body>
     </html>

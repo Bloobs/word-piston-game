@@ -19,7 +19,7 @@ export default function Privacidad() {
   const t = lang === "en" ? en.privacy : es.privacy
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6 md:p-12">
+    <div className="min-h-screen bg-background text-foreground p-6 md:p-12 pt-24">
       <div className="max-w-3xl mx-auto space-y-6">
         <Link href="/" className="text-primary hover:underline text-sm font-medium">
           &larr; {t.back_button}

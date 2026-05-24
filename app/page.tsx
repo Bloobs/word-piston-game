@@ -3,7 +3,7 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <main className="relative h-dvh w-full overflow-hidden bg-gradient-to-b from-background via-background to-card">
+    <main className="relative h-dvh w-full overflow-hidden bg-gradient-to-b from-background via-background to-card pt-16">
       <WordGame />
       
       {/* Enlace legal flotante obligatorio para AdSense */}

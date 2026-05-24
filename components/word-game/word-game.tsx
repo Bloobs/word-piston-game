@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { useMemo, useState, useEffect } from "react"
 import { useWordGame } from "@/hooks/use-word-game"
+import { useGameState } from "@/components/game-state-provider"
 import { INITIAL_RANKING, StartScreen, type RankingEntry } from "./start-screen"
 import { ScoreDisplay } from "./score-display"
 import { WordZone } from "./word-zone"
@@ -67,6 +68,7 @@ declare global {
 
 export function WordGame() {
   const { state, actions, currentWord, isCurrentWordValid } = useWordGame()
+  const { setIsGameActive } = useGameState()
   const t = useTranslations(state.language)
 
   const [selectedCountry, setSelectedCountry] = useState(getCountryFromBrowserLocale)
@@ -120,6 +122,12 @@ export function WordGame() {
 
     fetchRankings()
   }, [])
+
+  // Actualizar estado de partida activa para controlar la visibilidad del menú
+  useEffect(() => {
+    const isGamePlaying = state.gameStarted && !state.gameOver
+    setIsGameActive(isGamePlaying)
+  }, [state.gameStarted, state.gameOver, setIsGameActive])
 
   // El ranking actual a mostrar dependerá del idioma seleccionado
   const currentRanking = rankingByLanguage[state.language];
