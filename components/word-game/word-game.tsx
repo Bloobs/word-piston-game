@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trophy } from "lucide-react"
 import { useTranslations } from "@/hooks/use-translations"
+import Script from "next/script"
 
 function getCountryFromBrowserLocale(): string {
   if (typeof navigator === "undefined") return "US"
@@ -204,65 +205,17 @@ export function WordGame() {
   const handleWatchAd = () => {
     if (isProcessingHintAd) return
     setIsProcessingHintAd(true)
-    console.log("[Monetag Debug] 1. Botón 'Ver Anuncio' pulsado. Iniciando flujo.");
+    console.log("[Monetag] Botón ver anuncio pulsado. El script global procesará la superposición.");
 
-    // Timeout general por si todo colapsa
-    let adTimeout: NodeJS.Timeout | null = setTimeout(() => {
-      console.warn("[Monetag Debug] -> Timeout crítico de 8s alcanzado. Forzando entrega de pista.");
-      safeGrantHint()
-    }, 8000)
-
-    let finished = false
-
-    const safeGrantHint = () => {
-      if (finished) return
-      finished = true
-      if (adTimeout) clearTimeout(adTimeout)
+    // Margen de cortesía de 3.5 segundos:
+    // Si Monetag tiene inventario para el usuario, el anuncio Vignette saltará en la misma página 
+    // bloqueando la pantalla. Si Monetag decide no mostrar anuncio (por capping o falta de campañas), 
+    // el juego continúa de inmediato para que el usuario no se quede colgado.
+    setTimeout(() => {
       grantHint()
       setIsProcessingHintAd(false)
-      console.log("[Monetag Debug] -> Flujo finalizado. Pista desbloqueada en el estado.");
-    }
-
-    try {
-      if (typeof window !== "undefined") {
-        console.log("[Monetag Debug] 2. Entorno del navegador confirmado. Creando nodo <script>.");
-        
-        const s = document.createElement('script')
-        s.dataset.zone = '11126455'
-        s.src = 'https://n6wxm.com/vignette.min.js'
-        
-        // Callback si el script se descarga correctamente
-        s.onload = () => {
-          console.log("[Monetag Debug] SUCCESS: El script 'vignette.min.js' se ha descargado y ejecutado en el navegador.");
-        }
-
-        // Callback si algo bloquea el script
-        s.onerror = (err) => {
-          console.error("[Monetag Debug] ERROR: El navegador ha bloqueado o no ha podido descargar el script de Monetag. ¿AdBlock activo?", err);
-        }
-
-        const target = [document.documentElement, document.body].filter(Boolean).pop()
-        
-        if (target) {
-          console.log("[Monetag Debug] 3. Nodo destino encontrado. Inyectando script en el DOM.");
-          target.appendChild(s)
-          
-          setTimeout(() => {
-             console.log("[Monetag Debug] 4. Pasado 1.5 segundos de cortesía. Ejecutando safeGrantHint.");
-             safeGrantHint()
-          }, 1500)
-        } else {
-          console.warn("[Monetag Debug] AVISO: No se ha encontrado un elemento contenedor válido (body/html).");
-          safeGrantHint()
-        }
-      } else {
-        console.warn("[Monetag Debug] AVISO: 'window' no está definido (Ejecución en servidor).");
-        safeGrantHint()
-      }
-    } catch (e) {
-      console.error("[Monetag Debug] EXCEPCIÓN capturada en el bloque try/catch:", e)
-      safeGrantHint()
-    }
+      console.log("[Monetag] Procesado flujo de entrega tras interacción.");
+    }, 3500)
   }
 
   if (!state.gameStarted && !state.gameOver) {
@@ -445,6 +398,13 @@ export function WordGame() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* PRECARGA GLOBAL DEL FORMATO VIGNETTE DE MONETAG EN LA MISMA PÁGINA */}
+      <Script
+        src="https://n6wxm.com/vignette.min.js"
+        data-zone="11126455"
+        strategy="afterInteractive"
+      />
     </div>
   )
 }
