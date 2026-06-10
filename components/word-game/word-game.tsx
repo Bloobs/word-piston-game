@@ -34,37 +34,16 @@ function getCountryFromBrowserLocale(): string {
 }
 
 function getLanguageFromBrowserLocale(): "es" | "en" {
-  if (typeof navigator === "undefined") return "es" // Por defecto en servidor/si falla
+  if (typeof navigator === "undefined") return "es" 
 
   const browserLang = navigator.language || (navigator as any).userLanguage
-  // Si empieza por "en" (como en-US, en-GB, en), devolvemos "en"
   if (browserLang && browserLang.toLowerCase().startsWith("en")) {
     return "en"
   }
   
-  // Por defecto para España, LATAM o cualquier otro idioma no contemplado
   return "es" 
 }
 
-type AdBreakBeforeRewardFn = (showAdFn: () => void) => void
-
-type AdBreakOptions = {
-  type: "rewarded"
-  name?: string
-  beforeReward?: AdBreakBeforeRewardFn
-  adViewed?: () => void
-  adDismissed?: () => void
-  adBreakDone?: () => void
-  adBreakEmpty?: () => void
-}
-
-declare global {
-  interface Window {
-    adsbygoogle?: unknown[]
-    adBreak?: (options: AdBreakOptions) => void
-    adConfig?: (options: Record<string, unknown>) => void
-  }
-}
 
 export function WordGame() {
   const { state, actions, currentWord, isCurrentWordValid } = useWordGame()
@@ -73,7 +52,6 @@ export function WordGame() {
 
   const [selectedCountry, setSelectedCountry] = useState(getCountryFromBrowserLocale)
   
-  // Guardamos las dos tablas en memoria
   const [rankingByLanguage, setRankingByLanguage] = useState<Record<"es" | "en", RankingEntry[]>>({
     es: INITIAL_RANKING,
     en: INITIAL_RANKING,
@@ -86,18 +64,13 @@ export function WordGame() {
   const [isHintModalOpen, setIsHintModalOpen] = useState(false)
   const [isProcessingHintAd, setIsProcessingHintAd] = useState(false)
 
-  // NUEVO: Efecto para detectar y configurar el idioma por defecto al arrancar
   useEffect(() => {
-      // Solo queremos hacerlo una vez al cargar la página por primera vez
-      // y solo si el idioma inicial que queremos es distinto al que ya tiene el state
     const detectedLanguage = getLanguageFromBrowserLocale()
     if (state.language !== detectedLanguage) {
         actions.setLanguage(detectedLanguage)
     }
-  }, []) // Pasamos actions como dependencia (o déjalo vacío [] si tu linter te lo permite)
+  }, []) 
   
-
-  // Cargar rankings reales al arrancar (ambos idiomas)
   useEffect(() => {
     async function fetchRankings() {
       try {
@@ -123,13 +96,11 @@ export function WordGame() {
     fetchRankings()
   }, [])
 
-  // Actualizar estado de partida activa para controlar la visibilidad del menú
   useEffect(() => {
     const isGamePlaying = state.gameStarted && !state.gameOver
     setIsGameActive(isGamePlaying)
   }, [state.gameStarted, state.gameOver, setIsGameActive])
 
-  // El ranking actual a mostrar dependerá del idioma seleccionado
   const currentRanking = rankingByLanguage[state.language];
 
   const qualifyingRank = useMemo(() => {
@@ -160,7 +131,6 @@ export function WordGame() {
 
     setIsSaving(true)
 
-    // AÑADIDO: Console.log para ver las palabras en las DevTools (F12)
     console.log(`[PalabraMaster] Guardando récord de ${cleanName} con palabras:`, state.foundWords)
 
     try {
@@ -172,7 +142,7 @@ export function WordGame() {
           country: selectedCountry,
           score: state.totalScore,
           lang: state.language,
-          words: state.foundWords // AÑADIDO: Se envía el array de palabras
+          words: state.foundWords 
         })
       })
 
@@ -193,8 +163,8 @@ export function WordGame() {
           name: cleanName, 
           country: selectedCountry, 
           score: state.totalScore,
-          words: state.foundWords // AÑADIDO: Almacenado local en caso de fallo
-        } as RankingEntry] // Forzamos el casteo en caso de que TS se queje si RankingEntry aún no tiene 'words'
+          words: state.foundWords 
+        } as RankingEntry] 
           .sort((a, b) => b.score - a.score)
           .slice(0, 25)
         return { ...prev, [state.language]: updated }
@@ -226,7 +196,7 @@ export function WordGame() {
 
     let adTimeout: NodeJS.Timeout | null = setTimeout(() => {
       safeGrantHint()
-    }, 2500)
+    }, 8000)
 
     let finished = false
 
@@ -238,41 +208,28 @@ export function WordGame() {
       setIsProcessingHintAd(false)
     }
 
-    const safeStopLoading = () => {
-      if (finished) return
-      if (adTimeout) clearTimeout(adTimeout)
-      setIsProcessingHintAd(false)
-    }
-
     try {
-      if (typeof window === "undefined" || typeof window.adBreak !== "function") {
+      if (typeof window !== "undefined") {
+        const s = document.createElement('script')
+        s.dataset.zone = '11126455'
+        s.src = 'https://n6wxm.com/vignette.min.js'
+        
+        const target = [document.documentElement, document.body].filter(Boolean).pop()
+        
+        if (target) {
+          target.appendChild(s)
+          
+          setTimeout(() => {
+             safeGrantHint()
+          }, 1500)
+        } else {
+          safeGrantHint()
+        }
+      } else {
         safeGrantHint()
-        return
       }
-
-      window.adBreak({
-        type: "rewarded",
-        name: "hint_reward",
-        beforeReward: (showAdFn) => {
-          if (adTimeout) clearTimeout(adTimeout)
-          showAdFn()
-        },
-        adViewed: () => {
-          safeGrantHint()
-        },
-        adDismissed: () => {
-          setIsHintModalOpen(false)
-          safeStopLoading()
-        },
-        adBreakEmpty: () => {
-          safeGrantHint()
-        },
-        adBreakDone: () => {
-          safeStopLoading()
-        },
-      })
     } catch (e) {
-      console.error("Error lanzando adBreak:", e)
+      console.error("Error lanzando el anuncio de Monetag:", e)
       safeGrantHint()
     }
   }
@@ -280,14 +237,14 @@ export function WordGame() {
   if (!state.gameStarted && !state.gameOver) {
     return (
       <StartScreen
-        key={state.language} // Forzamos repintado al cambiar idioma para que actualice la tabla al instante
+        key={state.language} 
         onStartGame={handleStartGame}
         onLanguageChange={actions.setLanguage}
         isDictionaryLoading={state.dictionaryLoading}
         initialLanguage={state.language}
         initialCountry={selectedCountry}
         onCountryChange={setSelectedCountry}
-        ranking={currentRanking} // Le pasamos la tabla que toca según el idioma elegido
+        ranking={currentRanking} 
       />
     )
   }
@@ -313,7 +270,7 @@ export function WordGame() {
 
       <div className="shrink-0 py-3">
         <GameControls
-          canSubmit={isCurrentWordValid} // <-- Corregido: Ahora solo se activa si la palabra existe
+          canSubmit={isCurrentWordValid} 
           canUseHint={true}
           onSubmit={actions.submitWord}
           onHint={handleHintRequest}
