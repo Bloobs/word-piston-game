@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   other: {
-    "google-adsense-account": "ca-pub-8772151413997813"
+    "clckd": "d2f6cb0368e266fe4c75316d8b314161"
   },
   icons: {
     icon: [
