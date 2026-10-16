@@ -315,7 +315,11 @@ function checkWord(word: string, language: "es" | "en"): boolean {
   return false
 }
 
-function getDefinition(word: string): string | null {
+export function getDefinition(
+  word: string,
+  language: "es" | "en"
+): string | null {
+  if (language !== "es") return null
   return MOCK_DEFINITIONS[word.toUpperCase()] || null
 }
 
@@ -532,7 +536,7 @@ export function useWordGame() {
       const basePoints = prev.wordZone.reduce((sum, l) => sum + l.points, 0)
       const bonus = calculateBonus(prev.wordZone.length)
       const wordPoints = basePoints + bonus
-      const definition = getDefinition(realWord)
+      const definition = getDefinition(realWord, prev.language)
 
       const boardCleared = prev.columns.every((col) => col.length === 0)
       const clearBonus = boardCleared ? 100 : 0

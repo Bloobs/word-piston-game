@@ -77,9 +77,6 @@ export function WordGame() {
   const { status: crazyGamesSdkStatus, data: crazyGamesData } = useCrazyGamesSDK()
   const t = useTranslations(state.language)
 
-  const [isHintModalOpen, setIsHintModalOpen] = useState(false)
-  const [isProcessingHintAd, setIsProcessingHintAd] = useState(false)
-  const [adErrorMessage, setAdErrorMessage] = useState<string | null>(null)
   const [rankingsByLanguage, setRankingsByLanguage] = useState<
     Record<GameLanguage, typeof DEMO_RANKINGS[GameLanguage]>
   >(() => ({
@@ -96,7 +93,7 @@ export function WordGame() {
   const unavailableLoggedRef = useRef(false)
   const personalBestRef = useRef<PersonalBest | null>(null)
   const sessionBestRef = useRef<PersonalBest | null>(null)
-  const adRequestInFlight = useRef(false)
+  const gameplayStartedWithSdkRef = useRef(false)
 
   // NUEVO: Efecto para detectar y configurar el idioma por defecto al arrancar
   useEffect(() => {
@@ -115,13 +112,34 @@ export function WordGame() {
     setIsGameActive(isGamePlaying)
   }, [state.gameStarted, state.gameOver, setIsGameActive])
 
+  useEffect(() => {
+    if (crazyGamesSdkStatus !== "ready") return
+
+    const gameModule = window.CrazyGames?.SDK?.game
+    if (!gameModule?.gameplayStart || !gameModule.gameplayStop) return
+
+    const isGamePlaying = state.gameStarted && !state.gameOver
+    if (isGamePlaying && !gameplayStartedWithSdkRef.current) {
+      try {
+        gameModule.gameplayStart()
+        gameplayStartedWithSdkRef.current = true
+      } catch (error) {
+        console.error("Failed to notify CrazyGames that gameplay started:", error)
+      }
+    } else if (!isGamePlaying && gameplayStartedWithSdkRef.current) {
+      try {
+        gameModule.gameplayStop()
+      } catch (error) {
+        console.error("Failed to notify CrazyGames that gameplay stopped:", error)
+      } finally {
+        gameplayStartedWithSdkRef.current = false
+      }
+    }
+  }, [crazyGamesSdkStatus, state.gameStarted, state.gameOver])
+
   const currentRanking = rankingsByLanguage[state.language]
 
   const handleStartGame = (language: "es" | "en") => {
-    setIsHintModalOpen(false)
-    setIsProcessingHintAd(false)
-    setAdErrorMessage(null)
-    adRequestInFlight.current = false
     activeGameIdRef.current += 1
     actions.startNewGame(language)
   }
@@ -244,59 +262,6 @@ export function WordGame() {
     t.startScreen.you,
   ])
 
-  const handleHintRequest = () => {
-    if (adRequestInFlight.current) return
-    setAdErrorMessage(null)
-    setIsHintModalOpen(true)
-  }
-
-  const handleCloseHintModal = () => {
-    if (adRequestInFlight.current) return
-    setIsHintModalOpen(false)
-    setAdErrorMessage(null)
-  }
-
-  const handleWatchAd = () => {
-    if (adRequestInFlight.current) return
-
-    const sdk = window.CrazyGames?.SDK
-    if (crazyGamesSdkStatus !== "ready" || !sdk?.ad) {
-      setAdErrorMessage(t.ads.sdkUnavailable)
-      return
-    }
-
-    adRequestInFlight.current = true
-    setIsProcessingHintAd(true)
-    setAdErrorMessage(null)
-
-    const resetFailedRequest = (error: unknown) => {
-      if (!adRequestInFlight.current) return
-      adRequestInFlight.current = false
-      setIsProcessingHintAd(false)
-      setAdErrorMessage(t.ads.adError)
-      console.error("CrazyGames rewarded ad failed:", error)
-    }
-
-    try {
-      sdk.ad.requestAd("rewarded", {
-        adStarted: () => {
-          if (adRequestInFlight.current) setIsProcessingHintAd(true)
-        },
-        adFinished: () => {
-          if (!adRequestInFlight.current) return
-          adRequestInFlight.current = false
-          setIsProcessingHintAd(false)
-          setAdErrorMessage(null)
-          setIsHintModalOpen(false)
-          actions.useHint()
-        },
-        adError: resetFailedRequest,
-      })
-    } catch (error) {
-      resetFailedRequest(error)
-    }
-  }
-
   if (!state.gameStarted && !state.gameOver) {
     return (
       <StartScreen
@@ -335,7 +300,7 @@ export function WordGame() {
           canSubmit={isCurrentWordValid} // <-- Corregido: Ahora solo se activa si la palabra existe
           canUseHint={true}
           onSubmit={actions.submitWord}
-          onHint={handleHintRequest}
+          onHint={actions.useHint}
           onGiveUp={actions.giveUp}
           totalScore={state.totalScore}
           language={state.language}
@@ -360,68 +325,6 @@ export function WordGame() {
           definition={state.lastWordDefinition}
           language={state.language}
         />
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isHintModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl overflow-hidden"
-            >
-              <div className="space-y-3 text-center">
-                <h3 className="text-xl font-bold text-foreground">
-                  {state.language === "es" ? "Desbloquear pista" : "Unlock hint"}
-                </h3>
-
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {state.language === "es"
-                    ? "La pista se concede cuando termina el anuncio recompensado de CrazyGames."
-                    : "The hint is granted when the CrazyGames rewarded ad finishes."}
-                </p>
-              </div>
-
-              <div className="mt-6 flex flex-col gap-3">
-                {adErrorMessage && (
-                  <p role="status" className="text-sm text-destructive">
-                    {adErrorMessage}
-                  </p>
-                )}
-                <Button
-                  type="button"
-                  className="w-full"
-                  onClick={handleWatchAd}
-                  disabled={isProcessingHintAd}
-                >
-                  {isProcessingHintAd
-                    ? state.language === "es"
-                      ? "Cargando anuncio..."
-                      : "Loading ad..."
-                    : state.language === "es"
-                      ? "Ver anuncio"
-                      : "Watch ad"}
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleCloseHintModal}
-                  disabled={isProcessingHintAd}
-                >
-                  {state.language === "es" ? "Cancelar" : "Cancel"}
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
       </AnimatePresence>
 
       <AnimatePresence>

@@ -14,5 +14,6 @@ next.user-config.*
 node_modules
 .next/
 /out/
+/out-crazygames/
 .DS_Store
 .vercel

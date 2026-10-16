@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useLanguage } from "@/components/language-provider"
+import { WebsiteChrome } from "@/components/website-chrome"
 import es from "@/messages/es.json"
 import en from "@/messages/en.json"
 
@@ -19,6 +20,7 @@ export default function Privacidad() {
   const t = lang === "en" ? en.privacy : es.privacy
 
   return (
+    <WebsiteChrome>
     <div className="min-h-screen bg-background text-foreground p-6 md:p-12 pt-24">
       <div className="max-w-3xl mx-auto space-y-6">
         <Link href="../" className="text-primary hover:underline text-sm font-medium">
@@ -57,5 +59,6 @@ export default function Privacidad() {
         </div>
       </div>
     </div>
+    </WebsiteChrome>
   )
 }

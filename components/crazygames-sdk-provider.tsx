@@ -3,12 +3,6 @@
 import { createContext, useCallback, useContext, useState } from "react"
 import Script from "next/script"
 
-type CrazyGamesAdCallbacks = {
-  adStarted: () => void
-  adFinished: () => void
-  adError: (error: unknown) => void
-}
-
 export type CrazyGamesDataModule = {
   getItem: (key: string) => string | null
   setItem: (key: string, value: string) => void
@@ -16,8 +10,9 @@ export type CrazyGamesDataModule = {
 
 type CrazyGamesSDK = {
   init: () => Promise<void>
-  ad: {
-    requestAd: (type: "rewarded", callbacks: CrazyGamesAdCallbacks) => void
+  game?: {
+    gameplayStart?: () => void
+    gameplayStop?: () => void
   }
   data: CrazyGamesDataModule
 }

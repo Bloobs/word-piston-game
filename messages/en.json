@@ -46,15 +46,11 @@
     "finalScore": "Final Score",
     "ok": "OK"
   },
-  "ads": {
-    "sdkUnavailable": "CrazyGames ads are unavailable in this environment. You can continue playing.",
-    "adError": "The ad did not finish. No hint was granted; please try again."
-  },
   "seo_article": {
       "title": "About PalabraMaster: The Ultimate Word Game",
       "intro": "Welcome to PalabraMaster, an addictive puzzle game designed to test your vocabulary and mental agility. In this HTML5 game, your main goal is to form the longest possible words using the available letters on the board. Perfect for casual, fun brain training.",
       "how_to_play": "How to Play & Basic Rules",
-      "instructions": "To play, simply swipe or click on adjacent letters to connect them and form valid words. The longer the word, the higher your score. There is no time limit, allowing you to strategically plan your moves to clear the board. The game ends automatically when there are no more possible words left to build. Therefore, if the game hasn't ended yet, it means there is still at least one word waiting to be discovered! If your mind goes blank, you can request a hint by watching a CrazyGames rewarded ad; the hint is granted only when the ad finishes.",
+      "instructions": "To play, simply swipe or click on adjacent letters to connect them and form valid words. The longer the word, the higher your score. There is no time limit, allowing you to strategically plan your moves to clear the board. The game ends automatically when there are no more possible words left to build. Therefore, if the game hasn't ended yet, it means there is still at least one word waiting to be discovered! If your mind goes blank, you can request a hint to reveal an available word.",
       "scoring_title": "Scoring System and Bonuses",
       "scoring_desc": "The key to mastering PalabraMaster is finding the longest words, as the system heavily rewards length:",
       "bonus_6": "+5 bonus points for 6-letter words.",
@@ -84,7 +80,7 @@
     "submit_title": "Accumulating Points",
     "submit_desc": "Once a valid word is formed, the 'Submit' button turns green. Click it to remove letters from the board and add points to your total score.",
     "hints_title": "Stuck? Use Hints",
-    "hints_desc": "If you are stuck, you can request a hint by watching a CrazyGames rewarded ad. The hint is granted only when the ad finishes.",
+    "hints_desc": "If you are stuck, you can request a hint to reveal an available word on the board.",
     "leaderboard_title": "Demo Leaderboard",
     "leaderboard_desc": "The table shows 10 fictional scores for this preview. It is not a global leaderboard, and game scores are not saved.",
     "strategies_title": "Pro Level Strategies",
@@ -110,8 +106,8 @@
     "section2_title": "2. Data We Collect",
     "section2_text": "PalabraMaster does not require registration or collect personal data directly. All game progress is saved locally.",
     "section2_subtext": "CrazyGames advertising services may process data according to the platform's policies.",
-    "section3_title": "3. CrazyGames Ads and SDK",
-    "section3_text": "The game requests rewarded video ads through the official CrazyGames SDK. Ad availability and related data processing are handled by the CrazyGames platform.",
+    "section3_title": "3. CrazyGames Advertising",
+    "section3_text": "CrazyGames may display advertisements and process related data according to the platform's policies.",
     "section4_title": "4. User Rights (GDPR)",
     "section4_text": "If you are in the EEA, please use the privacy and consent options provided by CrazyGames.",
     "section5_title": "5. Contact",

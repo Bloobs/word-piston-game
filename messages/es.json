@@ -46,15 +46,11 @@
     "finalScore": "Puntuación Final",
     "ok": "OK"
   },
-  "ads": {
-    "sdkUnavailable": "Los anuncios de CrazyGames no están disponibles en este entorno. Puedes seguir jugando.",
-    "adError": "El anuncio no se completó. No se concedió la pista; inténtalo de nuevo."
-  },
   "seo_article": {
       "title": "Acerca de PalabraMaster: El mejor juego de palabras",
       "intro": "Bienvenido a PalabraMaster, un adictivo rompecabezas diseñado para poner a prueba tu vocabulario y agilidad mental. En este juego HTML5, tu objetivo principal es formar las palabras más largas posibles utilizando las letras disponibles en el tablero. Ideal para ejercitar la mente de forma casual y divertida.",
       "how_to_play": "Cómo jugar y Reglas Básicas",
-      "instructions": "Para jugar, simplemente desliza o haz clic sobre las letras adyacentes para conectarlas y formar palabras válidas. Cuanto más larga sea la palabra, mayor será tu puntuación. No hay límite de tiempo, lo que te permite pensar estratégicamente tus movimientos para despejar el tablero. El juego termina automáticamente cuando ya no hay más palabras posibles para construir. Por lo tanto, si la partida no ha terminado, ¡significa que todavía queda alguna palabra oculta! Si te quedas en blanco, puedes solicitar una pista viendo un anuncio recompensado de CrazyGames; la pista solo se concede cuando el anuncio termina.",
+      "instructions": "Para jugar, simplemente desliza o haz clic sobre las letras adyacentes para conectarlas y formar palabras válidas. Cuanto más larga sea la palabra, mayor será tu puntuación. No hay límite de tiempo, lo que te permite pensar estratégicamente tus movimientos para despejar el tablero. El juego termina automáticamente cuando ya no hay más palabras posibles para construir. Por lo tanto, si la partida no ha terminado, ¡significa que todavía queda alguna palabra oculta! Si te quedas en blanco, puedes solicitar una pista para revelar una palabra disponible.",
       "scoring_title": "Sistema de Puntuación y Bonificaciones",
       "scoring_desc": "La clave para dominar PalabraMaster es buscar las palabras más largas, ya que el sistema recompensa significativamente la longitud:",
       "bonus_6": "+5 puntos de bonificación por palabras de 6 letras.",
@@ -84,7 +80,7 @@
       "submit_title": "Cómo acumular puntos",
       "submit_desc": "Una vez formada una palabra válida, el botón 'Acumular' se iluminará en verde. Al pulsarlo, las letras se eliminan del tablero y los puntos se suman a tu marcador total.",
       "hints_title": "¿Atascado? Usa Pistas",
-      "hints_desc": "Si te quedas bloqueado, puedes solicitar una pista viendo un anuncio recompensado de CrazyGames. La pista solo se concede cuando el anuncio termina.",
+      "hints_desc": "Si te quedas bloqueado, puedes solicitar una pista para revelar una palabra disponible del tablero.",
       "leaderboard_title": "Clasificación de demostración",
       "leaderboard_desc": "La tabla muestra 10 puntuaciones ficticias para esta prueba. No es una clasificación global y las puntuaciones de las partidas no se guardan.",
       "strategies_title": "Estrategias de Nivel Pro",
@@ -110,8 +106,8 @@
       "section2_title": "2. Datos que recopilamos",
       "section2_text": "PalabraMaster no requiere registro ni recopila datos personales directamente. Todo el progreso del juego se guarda de forma local.",
       "section2_subtext": "Los servicios de anuncios de CrazyGames pueden procesar datos conforme a las políticas de la plataforma.",
-      "section3_title": "3. Anuncios y SDK de CrazyGames",
-      "section3_text": "El juego solicita anuncios de vídeo recompensados mediante el SDK oficial de CrazyGames. La disponibilidad y el tratamiento asociado dependen de la plataforma CrazyGames.",
+      "section3_title": "3. Publicidad de CrazyGames",
+      "section3_text": "CrazyGames puede mostrar publicidad y procesar los datos asociados conforme a las políticas de la plataforma.",
       "section4_title": "4. Derechos del usuario (RGPD)",
       "section4_text": "Si te encuentras en el EEE, consulta las opciones de consentimiento y privacidad disponibles en CrazyGames.",
       "section5_title": "5. Contacto",

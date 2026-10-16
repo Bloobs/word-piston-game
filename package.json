@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node scripts/prepare-static-export.mjs",
+    "build": "next build && node scripts/prepare-static-export.mjs && npm run export:crazygames",
+    "export:crazygames": "node scripts/prepare-crazygames-export.mjs",
     "lint": "eslint ."
   },
   "dependencies": {

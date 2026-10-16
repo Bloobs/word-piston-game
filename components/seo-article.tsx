@@ -23,7 +23,7 @@ export function SeoArticle() {
   const t = lang === "en" ? en.seo_article : es.seo_article
 
   // Evitamos problemas de hidratación en Next.js
-  if (!mounted) return null
+  if (!mounted || pathname === "/") return null
 
   return (
     <article className="max-w-3xl mx-auto p-6 mt-10 text-muted-foreground text-sm opacity-80 border-t border-border/50 pb-20 relative z-0">

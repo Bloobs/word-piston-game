@@ -30,7 +30,7 @@ export function Navigation() {
   ]
 
   // No mostrar el menú si hay una partida activa
-  if (isGameActive) {
+  if (pathname === "/" || isGameActive) {
     return null
   }
 

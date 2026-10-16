@@ -33,7 +33,7 @@ export function SiteFooter() {
       : "../privacidad/"
 
   // Evitamos problemas de hidratación
-  if (!mounted) return null
+  if (!mounted || pathname === "/") return null
 
   return (
     <footer className="bg-background py-8 text-center text-sm text-muted-foreground border-t border-border z-20 relative w-full mt-auto">

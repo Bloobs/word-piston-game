@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useLanguage } from "@/components/language-provider"
+import { WebsiteChrome } from "@/components/website-chrome"
 import es from "@/messages/es.json"
 import en from "@/messages/en.json"
 
@@ -18,6 +19,7 @@ export default function GuiaJuego() {
   if (!mounted) return null
 
   return (
+    <WebsiteChrome>
     <main className="min-h-[100dvh] bg-background text-foreground flex flex-col items-center py-12 px-6 pt-24">
       <div className="max-w-4xl w-full">
 
@@ -78,5 +80,6 @@ export default function GuiaJuego() {
 
       </div>
     </main>
+    </WebsiteChrome>
   )
 }

@@ -3,11 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { CrazyGamesSDKProvider } from "@/components/crazygames-sdk-provider"
 import { NetworkMonitor } from "@/components/network-monitor"
-import { SeoArticle } from "@/components/seo-article"
-import { SiteFooter } from "@/components/site-footer"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { LanguageProvider } from "@/components/language-provider"
-import { Navigation } from "@/components/navigation"
 import { GameStateProvider } from "@/components/game-state-provider"
 
 
@@ -62,17 +59,11 @@ export default function RootLayout({
         <CrazyGamesSDKProvider>
           <LanguageProvider>
             <GameStateProvider>
-              <Navigation />
-
               <main className="min-h-[100dvh] w-full flex flex-col relative z-10">
                 {children}
               </main>
 
               <ScrollToTop />
-
-              <SeoArticle />
-
-              <SiteFooter />
 
               <NetworkMonitor />
             </GameStateProvider>
