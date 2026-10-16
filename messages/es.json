@@ -9,7 +9,13 @@
     "newGame": "Nueva Partida",
     "loadingDictionary": "Cargando diccionario...",
     "globalTop": "Top 10 de demostración",
-    "demoRankingNote": "Marcadores ficticios; las puntuaciones no se guardan."
+    "demoRankingNote": "Tabla provisional con marcadores de demostración y resultados de esta sesión; no es global.",
+    "you": "Tú",
+    "personalBest": "Récord personal",
+    "personalBestSpanish": "Conseguido en español",
+    "personalBestEnglish": "Conseguido en inglés",
+    "personalBestSessionOnly": "Récord de esta sesión; no se pudo verificar la persistencia.",
+    "personalBestError": "No se pudo leer o guardar el récord en CrazyGames."
   },
   "score": {
     "partial": "Parcial",
@@ -29,7 +35,11 @@
     "pointsEarned": "Puntos obtenidos",
     "continue": "Continuar",
     "bonusLabel": "+Bonus",
-    "definitionsUnavailable": "La consulta de definiciones está desactivada en esta versión."
+    "definitionLoading": "Consultando definición...",
+    "validWord": "Palabra válida.",
+    "definitionsUnavailable": "Definición no disponible.",
+    "connectionError": "No se pudo conectar con el servicio de definiciones.",
+    "localDefinitionSource": "Definición local de demostración"
   },
   "gameOver": {
     "title": "Fin de Partida",

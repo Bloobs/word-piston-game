@@ -315,8 +315,8 @@ function checkWord(word: string, language: "es" | "en"): boolean {
   return false
 }
 
-function getDefinition(word: string): string {
-  return MOCK_DEFINITIONS[word.toUpperCase()] || "Palabra válida."
+function getDefinition(word: string): string | null {
+  return MOCK_DEFINITIONS[word.toUpperCase()] || null
 }
 
 function calculateBonus(wordLength: number): number {

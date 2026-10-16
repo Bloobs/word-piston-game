@@ -13,7 +13,49 @@ import { ResultDialog } from "./result-dialog"
 import { Button } from "@/components/ui/button"
 import { Trophy } from "lucide-react"
 import { useTranslations } from "@/hooks/use-translations"
-import { useCrazyGamesSDK } from "@/components/crazygames-sdk-provider"
+import {
+  useCrazyGamesSDK,
+  type CrazyGamesDataModule,
+} from "@/components/crazygames-sdk-provider"
+
+type GameLanguage = "es" | "en"
+type PersonalBest = { score: number; language: GameLanguage }
+type PersonalBestStatus = "loading" | "ready" | "session" | "unavailable" | "error"
+
+const PERSONAL_BEST_KEY = "wordPistonGame.personalBest.v1"
+
+function parsePersonalBest(value: string | null): PersonalBest | null {
+  if (value === null) return null
+
+  const parsed: unknown = JSON.parse(value)
+  if (
+    typeof parsed !== "object" ||
+    parsed === null ||
+    !("score" in parsed) ||
+    !("language" in parsed) ||
+    typeof parsed.score !== "number" ||
+    !Number.isFinite(parsed.score) ||
+    parsed.score < 0 ||
+    (parsed.language !== "es" && parsed.language !== "en")
+  ) {
+    throw new Error("CrazyGames personal-best data has an invalid format.")
+  }
+
+  return { score: parsed.score, language: parsed.language }
+}
+
+function savePersonalBest(
+  data: CrazyGamesDataModule,
+  record: PersonalBest
+): boolean {
+  try {
+    data.setItem(PERSONAL_BEST_KEY, JSON.stringify(record))
+    return true
+  } catch (error) {
+    console.error("Failed to save the personal best with CrazyGames:", error)
+    return false
+  }
+}
 
 function getLanguageFromBrowserLocale(): "es" | "en" {
   if (typeof navigator === "undefined") return "es" // Por defecto en servidor/si falla
@@ -32,12 +74,28 @@ function getLanguageFromBrowserLocale(): "es" | "en" {
 export function WordGame() {
   const { state, actions, currentWord, isCurrentWordValid } = useWordGame()
   const { setIsGameActive } = useGameState()
-  const { status: crazyGamesSdkStatus } = useCrazyGamesSDK()
+  const { status: crazyGamesSdkStatus, data: crazyGamesData } = useCrazyGamesSDK()
   const t = useTranslations(state.language)
 
   const [isHintModalOpen, setIsHintModalOpen] = useState(false)
   const [isProcessingHintAd, setIsProcessingHintAd] = useState(false)
   const [adErrorMessage, setAdErrorMessage] = useState<string | null>(null)
+  const [rankingsByLanguage, setRankingsByLanguage] = useState<
+    Record<GameLanguage, typeof DEMO_RANKINGS[GameLanguage]>
+  >(() => ({
+    es: [...DEMO_RANKINGS.es].sort((left, right) => right.score - left.score),
+    en: [...DEMO_RANKINGS.en].sort((left, right) => right.score - left.score),
+  }))
+  const [personalBest, setPersonalBest] = useState<PersonalBest | null>(null)
+  const [personalBestStatus, setPersonalBestStatus] =
+    useState<PersonalBestStatus>("loading")
+  const activeGameIdRef = useRef(0)
+  const recordedGameIdRef = useRef<number | null>(null)
+  const dataModuleReadAttemptedRef = useRef(false)
+  const dataModuleReadSucceededRef = useRef(false)
+  const unavailableLoggedRef = useRef(false)
+  const personalBestRef = useRef<PersonalBest | null>(null)
+  const sessionBestRef = useRef<PersonalBest | null>(null)
   const adRequestInFlight = useRef(false)
 
   // NUEVO: Efecto para detectar y configurar el idioma por defecto al arrancar
@@ -57,15 +115,134 @@ export function WordGame() {
     setIsGameActive(isGamePlaying)
   }, [state.gameStarted, state.gameOver, setIsGameActive])
 
-  const currentRanking = DEMO_RANKINGS[state.language]
+  const currentRanking = rankingsByLanguage[state.language]
 
   const handleStartGame = (language: "es" | "en") => {
     setIsHintModalOpen(false)
     setIsProcessingHintAd(false)
     setAdErrorMessage(null)
     adRequestInFlight.current = false
+    activeGameIdRef.current += 1
     actions.startNewGame(language)
   }
+
+  useEffect(() => {
+    if (crazyGamesSdkStatus === "unavailable") {
+      setPersonalBestStatus((current) =>
+        current === "ready" ? current : "unavailable"
+      )
+      if (!unavailableLoggedRef.current) {
+        unavailableLoggedRef.current = true
+        console.info(
+          "CrazyGames Data Module is unavailable; personal-best persistence cannot be verified."
+        )
+      }
+      return
+    }
+
+    if (
+      crazyGamesSdkStatus !== "ready" ||
+      dataModuleReadAttemptedRef.current
+    ) {
+      return
+    }
+
+    dataModuleReadAttemptedRef.current = true
+    if (!crazyGamesData) {
+      console.error("CrazyGames SDK initialized without its Data Module.")
+      setPersonalBestStatus("error")
+      return
+    }
+
+    try {
+      const storedPersonalBest = parsePersonalBest(
+        crazyGamesData.getItem(PERSONAL_BEST_KEY)
+      )
+      dataModuleReadSucceededRef.current = true
+
+      const sessionBest = sessionBestRef.current
+      if (sessionBest && sessionBest.score > (storedPersonalBest?.score ?? 0)) {
+        personalBestRef.current = sessionBest
+        setPersonalBest(sessionBest)
+        setPersonalBestStatus(
+          savePersonalBest(crazyGamesData, sessionBest) ? "ready" : "error"
+        )
+        return
+      }
+
+      personalBestRef.current = storedPersonalBest
+      setPersonalBest(storedPersonalBest)
+      setPersonalBestStatus("ready")
+    } catch (error) {
+      console.error("Failed to read the personal best from CrazyGames:", error)
+      setPersonalBestStatus("error")
+    }
+  }, [crazyGamesSdkStatus, crazyGamesData])
+
+  useEffect(() => {
+    if (!state.gameOver) return
+
+    const gameId = activeGameIdRef.current
+    if (gameId === 0 || recordedGameIdRef.current === gameId) return
+    recordedGameIdRef.current = gameId
+
+    const finishedLanguage = state.language
+    const score = state.totalScore
+    const sessionEntry = { score, language: finishedLanguage }
+
+    setRankingsByLanguage((previousRankings) => {
+      const newEntry = {
+        name: t.startScreen.you,
+        score,
+      }
+      const sortedRanking = [
+        ...previousRankings[finishedLanguage],
+        newEntry,
+      ].sort((left, right) => right.score - left.score)
+      const topTen = sortedRanking.slice(0, 10)
+
+      if (!topTen.includes(newEntry)) return previousRankings
+      return { ...previousRankings, [finishedLanguage]: topTen }
+    })
+
+    if (!sessionBestRef.current || score > sessionBestRef.current.score) {
+      sessionBestRef.current = sessionEntry
+    }
+
+    const existingBest = personalBestRef.current
+    if (score <= (existingBest?.score ?? 0)) return
+
+    personalBestRef.current = sessionEntry
+    setPersonalBest(sessionEntry)
+
+    if (
+      crazyGamesSdkStatus === "ready" &&
+      crazyGamesData &&
+      dataModuleReadSucceededRef.current
+    ) {
+      setPersonalBestStatus(
+        savePersonalBest(crazyGamesData, sessionEntry) ? "ready" : "error"
+      )
+      return
+    }
+
+    if (crazyGamesSdkStatus === "ready") {
+      setPersonalBestStatus("error")
+      return
+    }
+
+    setPersonalBestStatus("session")
+    console.info(
+      "Personal best updated for this session only; CrazyGames persistence could not be verified."
+    )
+  }, [
+    state.gameOver,
+    state.totalScore,
+    state.language,
+    crazyGamesSdkStatus,
+    crazyGamesData,
+    t.startScreen.you,
+  ])
 
   const handleHintRequest = () => {
     if (adRequestInFlight.current) return
@@ -128,6 +305,8 @@ export function WordGame() {
         onLanguageChange={actions.setLanguage}
         isDictionaryLoading={state.dictionaryLoading}
         ranking={currentRanking} // Le pasamos la tabla que toca según el idioma elegido
+        personalBest={personalBest}
+        personalBestStatus={personalBestStatus}
       />
     )
   }

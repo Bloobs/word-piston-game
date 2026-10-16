@@ -9,11 +9,17 @@ type CrazyGamesAdCallbacks = {
   adError: (error: unknown) => void
 }
 
+export type CrazyGamesDataModule = {
+  getItem: (key: string) => string | null
+  setItem: (key: string, value: string) => void
+}
+
 type CrazyGamesSDK = {
   init: () => Promise<void>
   ad: {
     requestAd: (type: "rewarded", callbacks: CrazyGamesAdCallbacks) => void
   }
+  data: CrazyGamesDataModule
 }
 
 declare global {
@@ -75,6 +81,15 @@ export function CrazyGamesSDKProvider({ children }: { children: React.ReactNode 
   )
 }
 
-export function useCrazyGamesSDK(): { status: SDKStatus } {
-  return { status: useContext(CrazyGamesSDKContext) }
+export function useCrazyGamesSDK(): {
+  status: SDKStatus
+  data: CrazyGamesDataModule | null
+} {
+  const status = useContext(CrazyGamesSDKContext)
+  const data =
+    status === "ready" && typeof window !== "undefined"
+      ? window.CrazyGames?.SDK?.data ?? null
+      : null
+
+  return { status, data }
 }

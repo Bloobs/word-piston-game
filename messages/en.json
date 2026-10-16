@@ -9,7 +9,13 @@
     "newGame": "New Game",
     "loadingDictionary": "Loading dictionary...",
     "globalTop": "Demo Top 10",
-    "demoRankingNote": "Fictional scores; scores are not saved."
+    "demoRankingNote": "Provisional table with demo scores and this session's results; it is not global.",
+    "you": "You",
+    "personalBest": "Personal best",
+    "personalBestSpanish": "Achieved in Spanish",
+    "personalBestEnglish": "Achieved in English",
+    "personalBestSessionOnly": "Session best; persistence could not be verified.",
+    "personalBestError": "Could not read or save the personal best with CrazyGames."
   },
   "score": {
     "partial": "Partial",
@@ -29,7 +35,11 @@
     "pointsEarned": "Points earned",
     "continue": "Continue",
     "bonusLabel": "+Bonus",
-    "definitionsUnavailable": "Definition lookup is disabled in this version."
+    "definitionLoading": "Looking up definition...",
+    "validWord": "Valid word.",
+    "definitionsUnavailable": "Definition unavailable.",
+    "connectionError": "Could not connect to the definition service.",
+    "localDefinitionSource": "Local demo definition"
   },
   "gameOver": {
     "title": "Game Over",

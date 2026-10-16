@@ -16,7 +16,7 @@ import { useLanguage } from "@/components/language-provider"
 
 export interface RankingEntry {
   name: string
-  country: string
+  country?: string
   score: number
 }
 
@@ -25,6 +25,8 @@ interface StartScreenProps {
   onLanguageChange?: (language: "es" | "en") => void
   isDictionaryLoading?: boolean
   ranking: RankingEntry[]
+  personalBest: { score: number; language: "es" | "en" } | null
+  personalBestStatus: "loading" | "ready" | "session" | "unavailable" | "error"
 }
 
 function countryCodeToFlag(code: string): string {
@@ -37,28 +39,28 @@ function countryCodeToFlag(code: string): string {
 
 export const DEMO_RANKINGS: Record<"es" | "en", RankingEntry[]> = {
   es: [
-    { name: "María G.", country: "ES", score: 20 },
-    { name: "Carlos M.", country: "MX", score: 85 },
-    { name: "Ana P.", country: "AR", score: 50 },
-    { name: "Luis R.", country: "CO", score: 25 },
     { name: "Sofía L.", country: "CL", score: 90 },
-    { name: "Diego H.", country: "PE", score: 60 },
-    { name: "Valentina C.", country: "UY", score: 35 },
-    { name: "Andrés F.", country: "VE", score: 10 },
+    { name: "Carlos M.", country: "MX", score: 85 },
     { name: "Camila S.", country: "EC", score: 80 },
+    { name: "Diego H.", country: "PE", score: 60 },
+    { name: "Ana P.", country: "AR", score: 50 },
     { name: "Martín B.", country: "ES", score: 50 },
+    { name: "Valentina C.", country: "UY", score: 35 },
+    { name: "Luis R.", country: "CO", score: 25 },
+    { name: "María G.", country: "ES", score: 20 },
+    { name: "Andrés F.", country: "VE", score: 10 },
   ],
   en: [
-    { name: "Olivia W.", country: "US", score: 30 },
     { name: "Noah B.", country: "GB", score: 95 },
+    { name: "Sophia R.", country: "CA", score: 90 },
+    { name: "James H.", country: "IE", score: 70 },
     { name: "Amelia T.", country: "CA", score: 60 },
+    { name: "Jack M.", country: "AU", score: 60 },
+    { name: "Emily S.", country: "US", score: 45 },
+    { name: "Olivia W.", country: "US", score: 30 },
     { name: "Liam K.", country: "AU", score: 30 },
     { name: "Charlotte F.", country: "NZ", score: 30 },
-    { name: "James H.", country: "IE", score: 70 },
-    { name: "Emily S.", country: "US", score: 45 },
     { name: "Henry L.", country: "GB", score: 20 },
-    { name: "Sophia R.", country: "CA", score: 90 },
-    { name: "Jack M.", country: "AU", score: 60 },
   ],
 }
 
@@ -67,6 +69,8 @@ export function StartScreen({
   onLanguageChange,
   isDictionaryLoading,
   ranking,
+  personalBest,
+  personalBestStatus,
 }: StartScreenProps) {
   const { lang, setLang } = useLanguage()
   const t = useTranslations(lang)
@@ -162,6 +166,31 @@ export function StartScreen({
           : t.startScreen.newGame}
       </Button>
 
+      {personalBest && (
+        <div className="w-full max-w-md rounded-lg border border-border/50 bg-card/50 px-4 py-3 text-center">
+          <p className="font-semibold text-foreground">
+            {t.startScreen.personalBest}:{" "}
+            {personalBest.score.toLocaleString(lang === "es" ? "es-ES" : "en-US")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {personalBest.language === "es"
+              ? t.startScreen.personalBestSpanish
+              : t.startScreen.personalBestEnglish}
+          </p>
+          {(personalBestStatus === "session" ||
+            personalBestStatus === "unavailable") && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t.startScreen.personalBestSessionOnly}
+            </p>
+          )}
+          {personalBestStatus === "error" && (
+            <p className="mt-1 text-xs text-destructive">
+              {t.startScreen.personalBestError}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="flex w-full max-w-md flex-1 flex-col overflow-hidden pb-4">
         <div className="mb-4 flex shrink-0 items-center gap-2">
           <Trophy className="h-5 w-5 text-yellow-500" />
@@ -201,13 +230,17 @@ export function StartScreen({
                   <span className="text-sm font-medium text-foreground">
                     {player.name}
                   </span>
-                  <span
-                    className="text-base leading-none"
-                    title={player.country}
-                    aria-label={`Country ${player.country}`}
-                  >
-                    {player.country === "US" && player.score === 0 ? "" : countryCodeToFlag(player.country)}
-                  </span>
+                  {player.country && (
+                    <span
+                      className="text-base leading-none"
+                      title={player.country}
+                      aria-label={`Country ${player.country}`}
+                    >
+                      {player.country === "US" && player.score === 0
+                        ? ""
+                        : countryCodeToFlag(player.country)}
+                    </span>
+                  )}
                 </div>
                 <span className="font-mono text-sm font-semibold text-primary">
                   {player.score > 0 ? player.score.toLocaleString(lang === "es" ? "es-ES" : "en-US") : ""}
