@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -40,74 +39,10 @@ export function ResultDialog({
   language,
 }: ResultDialogProps) {
   const t = useTranslations(language)
-  const [isLoadingDefinition, setIsLoadingDefinition] = useState(false)
-  const [definitionText, setDefinitionText] = useState<string | null>(null)
-  const [definitionError, setDefinitionError] = useState<string | null>(null)
-  const [definitionSource, setDefinitionSource] = useState<string | null>(null)
+  const definitionText = isUsableDefinition(definition) ? definition.trim() : null
   const hasBonusCelebration = bonusPoints > 0
   const isEpicBonus = bonusPoints >= 25
   const starCount = isEpicBonus ? 14 : 9
-
-  useEffect(() => {
-    if (!isOpen || !word) {
-      setIsLoadingDefinition(false)
-      setDefinitionText(null)
-      setDefinitionError(null)
-      setDefinitionSource(null)
-      return
-    }
-
-    if (!navigator.onLine) {
-      setIsLoadingDefinition(false)
-      setDefinitionText(null)
-      setDefinitionError(t.resultDialog.offlineError)
-      setDefinitionSource(null)
-      return
-    }
-
-    let isCancelled = false
-
-    const fetchDefinition = async () => {
-      setIsLoadingDefinition(true)
-      setDefinitionText(null)
-      setDefinitionError(null)
-      setDefinitionSource(null)
-
-      try {
-        const endpoint = language === "es" ? "/api/rae" : "/api/dictionary-en"
-        const response = await fetch(`${endpoint}?word=${encodeURIComponent(word)}`)
-        const data: { ok?: boolean; definition?: string; error?: string; source?: string } = await response.json()
-
-        if (isCancelled) return
-
-        if (data.ok && isUsableDefinition(data.definition)) {
-          setDefinitionText(data.definition.trim())
-          setDefinitionError(null)
-          setDefinitionSource(data.source?.trim() || null)
-          return
-        }
-
-        setDefinitionText(null)
-        setDefinitionError(data.error || t.resultDialog.definitionNotFound)
-        setDefinitionSource(null)
-      } catch {
-        if (isCancelled) return
-        setDefinitionText(null)
-        setDefinitionError(t.resultDialog.definitionNotFound)
-        setDefinitionSource(null)
-      } finally {
-        if (!isCancelled) {
-          setIsLoadingDefinition(false)
-        }
-      }
-    }
-
-    void fetchDefinition()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [isOpen, word, language, definition, t.resultDialog.definitionNotFound, t.resultDialog.offlineError])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -190,17 +125,6 @@ export function ResultDialog({
             </motion.div>
           )}
 
-          {isLoadingDefinition && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="w-full rounded-lg border border-border/50 bg-muted/30 p-4 text-sm text-muted-foreground"
-            >
-              {t.resultDialog.searchingDefinition}
-            </motion.div>
-          )}
-
           {definitionText && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -212,22 +136,17 @@ export function ResultDialog({
                 <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">{definitionText}</p>
               </div>
-              {definitionSource && (
-                <p className="mt-2 text-xs italic text-muted-foreground">
-                  {t.resultDialog.sourcePrefix} {definitionSource}
-                </p>
-              )}
             </motion.div>
           )}
 
-          {definitionError && (
+          {!definitionText && (
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="w-full rounded-lg border border-border/50 bg-muted/30 p-4 text-sm text-muted-foreground"
             >
-              {definitionError}
+              {t.resultDialog.definitionsUnavailable}
             </motion.p>
           )}
 

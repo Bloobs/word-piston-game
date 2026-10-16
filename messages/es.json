@@ -6,15 +6,10 @@
     "languagePlaceholder": "Idioma",
     "languageSpanish": "Español",
     "languageEnglish": "Inglés",
-    "countryPlaceholder": "País",
-    "countrySpain": "España",
-    "countryMexico": "México",
-    "countryArgentina": "Argentina",
-    "countryColombia": "Colombia",
-    "countryChile": "Chile",
     "newGame": "Nueva Partida",
     "loadingDictionary": "Cargando diccionario...",
-    "globalTop": "Top 25 Global"
+    "globalTop": "Top 10 de demostración",
+    "demoRankingNote": "Marcadores ficticios; las puntuaciones no se guardan."
   },
   "score": {
     "partial": "Parcial",
@@ -32,36 +27,24 @@
     "title": "Excelente",
     "ariaDescription": "Resultado de la palabra",
     "pointsEarned": "Puntos obtenidos",
-    "searchingDefinition": "Buscando definición...",
     "continue": "Continuar",
     "bonusLabel": "+Bonus",
-    "definitionNotFound": "No se encontró el significado.",
-    "offlineError": "Sin conexión. No se ha podido consultar la definición.",
-    "sourcePrefix": "Fuente:"
+    "definitionsUnavailable": "La consulta de definiciones está desactivada en esta versión."
   },
   "gameOver": {
     "title": "Fin de Partida",
     "finalScore": "Puntuación Final",
-    "ok": "OK",
-    "newRecordMessage": "¡Nuevo récord! Has entrado en la posición",
-    "nicknamePlaceholder": "Escribe tu nickname",
-    "saveRecord": "Guardar en ranking",
-    "recordSaved": "Récord guardado correctamente."
+    "ok": "OK"
   },
-  "pwa": {
-      "title": "Instala Palabra Master",
-      "iosPart1": "Para instalar la app, pulsa el botón ",
-      "iosShare": "Compartir",
-      "iosPart2": " de la barra de Safari y luego ",
-      "iosAdd": "\"Añadir a la pantalla de inicio\"",
-      "desktopDesc": "Juega a pantalla completa y entra con un toque.",
-      "installBtn": "Instalar"
+  "ads": {
+    "sdkUnavailable": "Los anuncios de CrazyGames no están disponibles en este entorno. Puedes seguir jugando.",
+    "adError": "El anuncio no se completó. No se concedió la pista; inténtalo de nuevo."
   },
   "seo_article": {
       "title": "Acerca de PalabraMaster: El mejor juego de palabras",
       "intro": "Bienvenido a PalabraMaster, un adictivo rompecabezas diseñado para poner a prueba tu vocabulario y agilidad mental. En este juego HTML5, tu objetivo principal es formar las palabras más largas posibles utilizando las letras disponibles en el tablero. Ideal para ejercitar la mente de forma casual y divertida.",
       "how_to_play": "Cómo jugar y Reglas Básicas",
-      "instructions": "Para jugar, simplemente desliza o haz clic sobre las letras adyacentes para conectarlas y formar palabras válidas. Cuanto más larga sea la palabra, mayor será tu puntuación. No hay límite de tiempo, lo que te permite pensar estratégicamente tus movimientos para despejar el tablero. El juego termina automáticamente cuando ya no hay más palabras posibles para construir. Por lo tanto, si la partida no ha terminado, ¡significa que todavía queda alguna palabra oculta! Si te quedas en blanco, puedes pulsar el botón de 'Pista' para revelar una palabra que se puede formar a cambio de ver un breve anuncio.",
+      "instructions": "Para jugar, simplemente desliza o haz clic sobre las letras adyacentes para conectarlas y formar palabras válidas. Cuanto más larga sea la palabra, mayor será tu puntuación. No hay límite de tiempo, lo que te permite pensar estratégicamente tus movimientos para despejar el tablero. El juego termina automáticamente cuando ya no hay más palabras posibles para construir. Por lo tanto, si la partida no ha terminado, ¡significa que todavía queda alguna palabra oculta! Si te quedas en blanco, puedes solicitar una pista viendo un anuncio recompensado de CrazyGames; la pista solo se concede cuando el anuncio termina.",
       "scoring_title": "Sistema de Puntuación y Bonificaciones",
       "scoring_desc": "La clave para dominar PalabraMaster es buscar las palabras más largas, ya que el sistema recompensa significativamente la longitud:",
       "bonus_6": "+5 puntos de bonificación por palabras de 6 letras.",
@@ -70,7 +53,7 @@
       "bonus_9": "+25 puntos de bonificación por palabras de 9 letras.",
       "bonus_10": "+50 puntos de bonificación por palabras de 10 letras o más.",
       "bonus_clearfull": "+100 puntos de bonificación si al terminar el juego no queda ninguna letra.",
-      "conclusion": "Disfruta de PalabraMaster en cualquier dispositivo, ya sea móvil, tablet o escritorio. ¡Instala nuestra aplicación web progresiva (PWA) para jugar sin conexión y no perder tu progreso!"
+      "conclusion": "Disfruta de PalabraMaster en móviles, tablets y ordenadores dentro de CrazyGames."
     },
     "guide": {
       "back_button": "Volver al juego",
@@ -91,9 +74,9 @@
       "submit_title": "Cómo acumular puntos",
       "submit_desc": "Una vez formada una palabra válida, el botón 'Acumular' se iluminará en verde. Al pulsarlo, las letras se eliminan del tablero y los puntos se suman a tu marcador total.",
       "hints_title": "¿Atascado? Usa Pistas",
-      "hints_desc": "Si te quedas bloqueado, puedes usar el botón de 'Pista'. El juego resaltará posibles combinaciones para ayudarte a continuar. Esta función requiere visualizar un breve anuncio, lo que nos permite mantener el juego gratuito para todos.",
-      "leaderboard_title": "Records Mundiales",
-      "leaderboard_desc": "Mantenemos tablas de clasificación globales independientes para español e inglés, con los 25 mejores jugadores. Al terminar, si alcanzas el top 25, podrás registrar tu nickname y nacionalidad para ver tu posición en el ranking mundial.",
+      "hints_desc": "Si te quedas bloqueado, puedes solicitar una pista viendo un anuncio recompensado de CrazyGames. La pista solo se concede cuando el anuncio termina.",
+      "leaderboard_title": "Clasificación de demostración",
+      "leaderboard_desc": "La tabla muestra 10 puntuaciones ficticias para esta prueba. No es una clasificación global y las puntuaciones de las partidas no se guardan.",
       "strategies_title": "Estrategias de Nivel Pro",
       "strat_1_title": "Gestión de Vocales",
       "strat_1_desc": "No agotes tus vocales rápidamente; resérvalas para conectar consonantes complejas o formar palabras largas.",
@@ -116,17 +99,11 @@
       "section1_text": "En PalabraMaster, respetamos tu privacidad y estamos comprometidos a proteger los datos de nuestros usuarios.",
       "section2_title": "2. Datos que recopilamos",
       "section2_text": "PalabraMaster no requiere registro ni recopila datos personales directamente. Todo el progreso del juego se guarda de forma local.",
-      "section2_subtext": "Utilizamos servicios de terceros que pueden recopilar información anónima:",
-      "section2_list1": "Para medir el tráfico y rendimiento del sitio.",
-      "section2_list2": "Para mostrar anuncios publicitarios que financian el mantenimiento del juego.",
-      "section3_title": "3. Uso de Cookies y Google AdSense",
-      "section3_text": "Nuestro sitio web utiliza cookies para mejorar la experiencia y mostrar publicidad relevante.",
-      "section3_list1": "Los proveedores utilizan cookies para mostrar anuncios basados en visitas anteriores.",
-      "section3_list2": "Permite mostrar anuncios basados en el comportamiento de navegación.",
-      "section3_list3": "Puedes inhabilitar la publicidad personalizada visitando la",
-      "link_text": "Configuración de anuncios de Google",
+      "section2_subtext": "Los servicios de anuncios de CrazyGames pueden procesar datos conforme a las políticas de la plataforma.",
+      "section3_title": "3. Anuncios y SDK de CrazyGames",
+      "section3_text": "El juego solicita anuncios de vídeo recompensados mediante el SDK oficial de CrazyGames. La disponibilidad y el tratamiento asociado dependen de la plataforma CrazyGames.",
       "section4_title": "4. Derechos del usuario (RGPD)",
-      "section4_text": "Si te encuentras en el EEE, tienes derecho a configurar el uso de cookies no esenciales a través del banner de consentimiento.",
+      "section4_text": "Si te encuentras en el EEE, consulta las opciones de consentimiento y privacidad disponibles en CrazyGames.",
       "section5_title": "5. Contacto",
       "section5_text": "Si tienes dudas, puedes contactarnos enviando un correo electrónico a:"
     }

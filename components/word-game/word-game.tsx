@@ -1,38 +1,19 @@
 "use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { useMemo, useState, useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
 import { useWordGame } from "@/hooks/use-word-game"
 import { useGameState } from "@/components/game-state-provider"
-import { INITIAL_RANKING, StartScreen, type RankingEntry } from "./start-screen"
+import { DEMO_RANKINGS, StartScreen } from "./start-screen"
 import { ScoreDisplay } from "./score-display"
 import { WordZone } from "./word-zone"
 import { GameBoard } from "./game-board"
 import { GameControls } from "./game-controls"
 import { ResultDialog } from "./result-dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Trophy } from "lucide-react"
 import { useTranslations } from "@/hooks/use-translations"
-import Script from "next/script"
-
-function getCountryFromBrowserLocale(): string {
-  if (typeof navigator === "undefined") return "US"
-
-  const localeCandidates = [navigator.language, ...navigator.languages].filter(Boolean)
-  for (const locale of localeCandidates) {
-    const normalized = locale.replace("_", "-")
-    const parts = normalized.split("-")
-    if (parts.length >= 2) {
-      const region = parts[parts.length - 1].toUpperCase()
-      if (/^[A-Z]{2}$/.test(region)) {
-        return region
-      }
-    }
-  }
-
-  return "US"
-}
+import { useCrazyGamesSDK } from "@/components/crazygames-sdk-provider"
 
 function getLanguageFromBrowserLocale(): "es" | "en" {
   if (typeof navigator === "undefined") return "es" // Por defecto en servidor/si falla
@@ -51,22 +32,13 @@ function getLanguageFromBrowserLocale(): "es" | "en" {
 export function WordGame() {
   const { state, actions, currentWord, isCurrentWordValid } = useWordGame()
   const { setIsGameActive } = useGameState()
+  const { status: crazyGamesSdkStatus } = useCrazyGamesSDK()
   const t = useTranslations(state.language)
-
-  const [selectedCountry, setSelectedCountry] = useState(getCountryFromBrowserLocale)
-  
-  // Guardamos las dos tablas en memoria
-  const [rankingByLanguage, setRankingByLanguage] = useState<Record<"es" | "en", RankingEntry[]>>({
-    es: INITIAL_RANKING,
-    en: INITIAL_RANKING,
-  })
-  
-  const [nickname, setNickname] = useState("")
-  const [recordSaved, setRecordSaved] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
 
   const [isHintModalOpen, setIsHintModalOpen] = useState(false)
   const [isProcessingHintAd, setIsProcessingHintAd] = useState(false)
+  const [adErrorMessage, setAdErrorMessage] = useState<string | null>(null)
+  const adRequestInFlight = useRef(false)
 
   // NUEVO: Efecto para detectar y configurar el idioma por defecto al arrancar
   useEffect(() => {
@@ -79,143 +51,73 @@ export function WordGame() {
   }, []) // Pasamos actions como dependencia (o déjalo vacío [] si tu linter te lo permite)
   
 
-  // Cargar rankings reales al arrancar (ambos idiomas)
-  useEffect(() => {
-    async function fetchRankings() {
-      try {
-        const [resEs, resEn] = await Promise.all([
-          fetch('/api/ranking?lang=es'),
-          fetch('/api/ranking?lang=en')
-        ]);
-        
-        if (resEs.ok && resEn.ok) {
-          const dataEs = await resEs.json();
-          const dataEn = await resEn.json();
-          
-          setRankingByLanguage({
-            es: dataEs.ranking || INITIAL_RANKING,
-            en: dataEn.ranking || INITIAL_RANKING
-          });
-        }
-      } catch (error) {
-        console.error("Error loading rankings:", error)
-      }
-    }
-
-    fetchRankings()
-  }, [])
-
   // Actualizar estado de partida activa para controlar la visibilidad del menú
   useEffect(() => {
     const isGamePlaying = state.gameStarted && !state.gameOver
     setIsGameActive(isGamePlaying)
   }, [state.gameStarted, state.gameOver, setIsGameActive])
 
-  // El ranking actual a mostrar dependerá del idioma seleccionado
-  const currentRanking = rankingByLanguage[state.language];
-
-  const qualifyingRank = useMemo(() => {
-    if (!state.gameOver) return null
-    const index = currentRanking.findIndex((entry) => state.totalScore > entry.score)
-    
-    if (index === -1 && currentRanking.length < 25 && state.totalScore > 0) {
-      return currentRanking.length + 1
-    }
-    
-    return index === -1 ? null : index + 1
-  }, [currentRanking, state.gameOver, state.totalScore])
-
-  const qualifiesForTop25 = qualifyingRank !== null && state.totalScore > 0
-  const needsRecordSubmission = qualifiesForTop25 && !recordSaved
+  const currentRanking = DEMO_RANKINGS[state.language]
 
   const handleStartGame = (language: "es" | "en") => {
-    setNickname("")
-    setRecordSaved(false)
     setIsHintModalOpen(false)
     setIsProcessingHintAd(false)
+    setAdErrorMessage(null)
+    adRequestInFlight.current = false
     actions.startNewGame(language)
   }
 
-  const handleSaveRecord = async () => {
-    const cleanName = nickname.trim()
-    if (!cleanName || isSaving) return
-
-    setIsSaving(true)
-
-    // AÑADIDO: Console.log para ver las palabras en las DevTools (F12)
-    console.log(`[PalabraMaster] Guardando récord de ${cleanName} con palabras:`, state.foundWords)
-
-    try {
-      const response = await fetch('/api/ranking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: cleanName,
-          country: selectedCountry,
-          score: state.totalScore,
-          lang: state.language,
-          words: state.foundWords // AÑADIDO: Se envía el array de palabras
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        if (data.ranking) {
-          setRankingByLanguage(prev => ({
-            ...prev,
-            [state.language]: data.ranking
-          }))
-          setRecordSaved(true)
-        }
-      }
-    } catch (error) {
-      console.error("Error saving record:", error)
-      setRankingByLanguage((prev) => {
-        const updated = [...prev[state.language], { 
-          name: cleanName, 
-          country: selectedCountry, 
-          score: state.totalScore,
-          words: state.foundWords // AÑADIDO: Almacenado local en caso de fallo
-        } as RankingEntry] // Forzamos el casteo en caso de que TS se queje si RankingEntry aún no tiene 'words'
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 25)
-        return { ...prev, [state.language]: updated }
-      })
-      setRecordSaved(true)
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
   const handleHintRequest = () => {
-    if (isProcessingHintAd) return
+    if (adRequestInFlight.current) return
+    setAdErrorMessage(null)
     setIsHintModalOpen(true)
   }
 
   const handleCloseHintModal = () => {
-    if (isProcessingHintAd) return
+    if (adRequestInFlight.current) return
     setIsHintModalOpen(false)
-  }
-
-  const grantHint = () => {
-    setIsHintModalOpen(false)
-    actions.useHint()
+    setAdErrorMessage(null)
   }
 
   const handleWatchAd = () => {
-    if (isProcessingHintAd) return
-    setIsProcessingHintAd(true)
-    console.log("[Monetag] Botón ver anuncio pulsado. El script global procesará la superposición.");
+    if (adRequestInFlight.current) return
 
-    // Margen de cortesía de 3.5 segundos:
-    // Si Monetag tiene inventario para el usuario, el anuncio Vignette saltará en la misma página 
-    // bloqueando la pantalla. Si Monetag decide no mostrar anuncio (por capping o falta de campañas), 
-    // el juego continúa de inmediato para que el usuario no se quede colgado.
-    setTimeout(() => {
-      grantHint()
+    const sdk = window.CrazyGames?.SDK
+    if (crazyGamesSdkStatus !== "ready" || !sdk?.ad) {
+      setAdErrorMessage(t.ads.sdkUnavailable)
+      return
+    }
+
+    adRequestInFlight.current = true
+    setIsProcessingHintAd(true)
+    setAdErrorMessage(null)
+
+    const resetFailedRequest = (error: unknown) => {
+      if (!adRequestInFlight.current) return
+      adRequestInFlight.current = false
       setIsProcessingHintAd(false)
-      console.log("[Monetag] Procesado flujo de entrega tras interacción.");
-    }, 3500)
+      setAdErrorMessage(t.ads.adError)
+      console.error("CrazyGames rewarded ad failed:", error)
+    }
+
+    try {
+      sdk.ad.requestAd("rewarded", {
+        adStarted: () => {
+          if (adRequestInFlight.current) setIsProcessingHintAd(true)
+        },
+        adFinished: () => {
+          if (!adRequestInFlight.current) return
+          adRequestInFlight.current = false
+          setIsProcessingHintAd(false)
+          setAdErrorMessage(null)
+          setIsHintModalOpen(false)
+          actions.useHint()
+        },
+        adError: resetFailedRequest,
+      })
+    } catch (error) {
+      resetFailedRequest(error)
+    }
   }
 
   if (!state.gameStarted && !state.gameOver) {
@@ -225,9 +127,6 @@ export function WordGame() {
         onStartGame={handleStartGame}
         onLanguageChange={actions.setLanguage}
         isDictionaryLoading={state.dictionaryLoading}
-        initialLanguage={state.language}
-        initialCountry={selectedCountry}
-        onCountryChange={setSelectedCountry}
         ranking={currentRanking} // Le pasamos la tabla que toca según el idioma elegido
       />
     )
@@ -305,12 +204,17 @@ export function WordGame() {
 
                 <p className="text-sm leading-6 text-muted-foreground">
                   {state.language === "es"
-                    ? "La pista se mostrará después de un breve anuncio. Gracias por apoyar el juego."
-                    : "The hint will be shown after a short ad. Thanks for supporting the game."}
+                    ? "La pista se concede cuando termina el anuncio recompensado de CrazyGames."
+                    : "The hint is granted when the CrazyGames rewarded ad finishes."}
                 </p>
               </div>
 
               <div className="mt-6 flex flex-col gap-3">
+                {adErrorMessage && (
+                  <p role="status" className="text-sm text-destructive">
+                    {adErrorMessage}
+                  </p>
+                )}
                 <Button
                   type="button"
                   className="w-full"
@@ -363,35 +267,7 @@ export function WordGame() {
                 <p className="text-5xl font-bold text-primary">{state.totalScore}</p>
               </div>
 
-              {needsRecordSubmission && (
-                <div className="w-full space-y-3">
-                  <p className="text-center text-sm font-medium text-foreground">
-                    {t.gameOver.newRecordMessage} #{qualifyingRank}
-                  </p>
-
-                  <Input
-                    value={nickname}
-                    onChange={(event) => setNickname(event.target.value)}
-                    placeholder={t.gameOver.nicknamePlaceholder}
-                    maxLength={16}
-                    disabled={isSaving}
-                  />
-
-                  <Button
-                    onClick={handleSaveRecord}
-                    className="w-full"
-                    disabled={nickname.trim().length < 2 || isSaving}
-                  >
-                    {isSaving ? (state.language === 'es' ? "Guardando..." : "Saving...") : t.gameOver.saveRecord}
-                  </Button>
-                </div>
-              )}
-
-              {recordSaved && qualifiesForTop25 && (
-                <p className="text-sm text-green-500">{t.gameOver.recordSaved}</p>
-              )}
-
-              <Button onClick={actions.goToHome} size="lg" disabled={needsRecordSubmission || isSaving}>
+              <Button onClick={actions.goToHome} size="lg">
                 {t.gameOver.ok}
               </Button>
             </motion.div>
@@ -399,12 +275,6 @@ export function WordGame() {
         )}
       </AnimatePresence>
 
-      {/* PRECARGA GLOBAL DEL FORMATO VIGNETTE DE MONETAG EN LA MISMA PÁGINA */}
-      <Script
-        src="https://n6wxm.com/vignette.min.js"
-        data-zone="11126455"
-        strategy="afterInteractive"
-      />
     </div>
   )
 }

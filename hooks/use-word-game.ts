@@ -168,7 +168,7 @@ async function loadSpanishDictionary(): Promise<Map<string, string>> {
   if (spanishDictionary) return spanishDictionary
   if (dictionaryLoadPromise) return dictionaryLoadPromise
   
-  dictionaryLoadPromise = fetch("/api/dictionary?v=2")
+  dictionaryLoadPromise = fetch("./dictionaries/dicc_es_es.txt")
     .then((response) => {
       if (!response.ok) throw new Error(`Failed to load dictionary: ${response.status}`)
       return response.text()
@@ -212,7 +212,7 @@ async function loadEnglishDictionary(): Promise<Set<string>> {
 
   if (englishDictionaryLoadPromise) return englishDictionaryLoadPromise
 
-  englishDictionaryLoadPromise = fetch("/dictionaries/dicc_en_en.txt")
+  englishDictionaryLoadPromise = fetch("./dictionaries/dicc_en_en.txt")
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Failed to load dictionary: ${response.status}`)

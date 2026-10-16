@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 
 // Importa tus JSON de traducciones
@@ -10,6 +11,8 @@ import en from "@/messages/en.json"
 
 export function SeoArticle() {
   const { lang } = useLanguage()
+  const pathname = usePathname().replace(/\/+$/, "") || "/"
+  const assetRoot = pathname === "/" ? "./" : "../"
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -36,7 +39,7 @@ export function SeoArticle() {
           <div className="w-full md:w-1/2 flex justify-center">
              <Image 
                // Ruta dinámica según el idioma seleccionado
-               src={`/screenshots/gameplay-1-${lang}.png`} 
+               src={`${assetRoot}screenshots/gameplay-1-${lang}.png`}
                priority
                alt="Gameplay de PalabraMaster" 
                width={800} // Cambia esto al ancho real de tu captura
@@ -65,7 +68,7 @@ export function SeoArticle() {
         <div className="w-full mt-6 flex justify-center">
              <Image 
                // Ruta dinámica de la segunda imagen
-               src={`/screenshots/gameplay-2-${lang}.png`} 
+               src={`${assetRoot}screenshots/gameplay-2-${lang}.png`}
                alt="Sistema de puntuación de PalabraMaster" 
                width={800} // Cambia esto al ancho real de tu captura
                height={1600} // Cambia esto al alto real de tu captura

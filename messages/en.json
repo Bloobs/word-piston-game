@@ -6,15 +6,10 @@
     "languagePlaceholder": "Language",
     "languageSpanish": "Spanish",
     "languageEnglish": "English",
-    "countryPlaceholder": "Country",
-    "countrySpain": "Spain",
-    "countryMexico": "Mexico",
-    "countryArgentina": "Argentina",
-    "countryColombia": "Colombia",
-    "countryChile": "Chile",
     "newGame": "New Game",
     "loadingDictionary": "Loading dictionary...",
-    "globalTop": "Global Top 25"
+    "globalTop": "Demo Top 10",
+    "demoRankingNote": "Fictional scores; scores are not saved."
   },
   "score": {
     "partial": "Partial",
@@ -32,36 +27,24 @@
     "title": "Excellent",
     "ariaDescription": "Word result",
     "pointsEarned": "Points earned",
-    "searchingDefinition": "Searching meaning...",
     "continue": "Continue",
     "bonusLabel": "+Bonus",
-    "definitionNotFound": "Meaning not found.",
-    "offlineError": "Offline. Meaning could not be fetched.",
-    "sourcePrefix": "Source:"
+    "definitionsUnavailable": "Definition lookup is disabled in this version."
   },
   "gameOver": {
     "title": "Game Over",
     "finalScore": "Final Score",
-    "ok": "OK",
-    "newRecordMessage": "New high score! You reached position",
-    "nicknamePlaceholder": "Type your nickname",
-    "saveRecord": "Save to ranking",
-    "recordSaved": "Score saved successfully."
+    "ok": "OK"
   },
-  "pwa": {
-    "title": "Install Word Master",
-    "iosPart1": "To install the app, tap the ",
-    "iosShare": "Share",
-    "iosPart2": " button on Safari's menu, then tap ",
-    "iosAdd": "\"Add to Home Screen\"",
-    "desktopDesc": "Play in full screen and enter with just one tap.",
-    "installBtn": "Install"
+  "ads": {
+    "sdkUnavailable": "CrazyGames ads are unavailable in this environment. You can continue playing.",
+    "adError": "The ad did not finish. No hint was granted; please try again."
   },
   "seo_article": {
       "title": "About PalabraMaster: The Ultimate Word Game",
       "intro": "Welcome to PalabraMaster, an addictive puzzle game designed to test your vocabulary and mental agility. In this HTML5 game, your main goal is to form the longest possible words using the available letters on the board. Perfect for casual, fun brain training.",
       "how_to_play": "How to Play & Basic Rules",
-      "instructions": "To play, simply swipe or click on adjacent letters to connect them and form valid words. The longer the word, the higher your score. There is no time limit, allowing you to strategically plan your moves to clear the board. The game ends automatically when there are no more possible words left to build. Therefore, if the game hasn't ended yet, it means there is still at least one word waiting to be discovered! If your mind goes blank, you can always tap the 'Hint' button to reveal a playable word in exchange for watching a quick ad.",
+      "instructions": "To play, simply swipe or click on adjacent letters to connect them and form valid words. The longer the word, the higher your score. There is no time limit, allowing you to strategically plan your moves to clear the board. The game ends automatically when there are no more possible words left to build. Therefore, if the game hasn't ended yet, it means there is still at least one word waiting to be discovered! If your mind goes blank, you can request a hint by watching a CrazyGames rewarded ad; the hint is granted only when the ad finishes.",
       "scoring_title": "Scoring System and Bonuses",
       "scoring_desc": "The key to mastering PalabraMaster is finding the longest words, as the system heavily rewards length:",
       "bonus_6": "+5 bonus points for 6-letter words.",
@@ -70,7 +53,7 @@
       "bonus_9": "+25 bonus points for 9-letter words.",
       "bonus_10": "+50 bonus points for 10-letter or longer words.",
       "bonus_clearfull": "+100 bonus points if you clear the board.",
-      "conclusion": "Enjoy PalabraMaster on any device—mobile, tablet, or desktop. Install our Progressive Web App (PWA) to play offline and keep your progress safe!"
+      "conclusion": "Enjoy PalabraMaster on mobile, tablet, or desktop within CrazyGames."
     },
   "guide": {
     "back_button": "Back to game",
@@ -91,9 +74,9 @@
     "submit_title": "Accumulating Points",
     "submit_desc": "Once a valid word is formed, the 'Submit' button turns green. Click it to remove letters from the board and add points to your total score.",
     "hints_title": "Stuck? Use Hints",
-    "hints_desc": "If you are stuck, use the 'Hint' button. The game will highlight possible combinations to help you continue. This feature requires watching a short ad, allowing us to keep the game free.",
-    "leaderboard_title": "Global Leaderboards",
-    "leaderboard_desc": "We maintain independent global rankings for English and Spanish, showing the top 25 players. If you reach the top 25, you can register your nickname and nationality to see your position.",
+    "hints_desc": "If you are stuck, you can request a hint by watching a CrazyGames rewarded ad. The hint is granted only when the ad finishes.",
+    "leaderboard_title": "Demo Leaderboard",
+    "leaderboard_desc": "The table shows 10 fictional scores for this preview. It is not a global leaderboard, and game scores are not saved.",
     "strategies_title": "Pro Level Strategies",
     "strat_1_title": "Vowel Management",
     "strat_1_desc": "Don't exhaust your vowels early; save them for connecting complex consonants or forming long words.",
@@ -116,17 +99,11 @@
     "section1_text": "At PalabraMaster, we respect your privacy and are committed to protecting our users' data.",
     "section2_title": "2. Data We Collect",
     "section2_text": "PalabraMaster does not require registration or collect personal data directly. All game progress is saved locally.",
-    "section2_subtext": "We use third-party services that may collect anonymous information:",
-    "section2_list1": "To measure site traffic and performance.",
-    "section2_list2": "To show advertisements that fund the maintenance of the game.",
-    "section3_title": "3. Use of Cookies and Google AdSense",
-    "section3_text": "Our website uses cookies to improve the user experience and show relevant advertising.",
-    "section3_list1": "Third-party vendors use cookies to serve ads based on prior visits.",
-    "section3_list2": "Allows serving ads based on browsing behavior.",
-    "section3_list3": "You can opt out of personalized advertising by visiting the",
-    "link_text": "Google Ad Settings",
+    "section2_subtext": "CrazyGames advertising services may process data according to the platform's policies.",
+    "section3_title": "3. CrazyGames Ads and SDK",
+    "section3_text": "The game requests rewarded video ads through the official CrazyGames SDK. Ad availability and related data processing are handled by the CrazyGames platform.",
     "section4_title": "4. User Rights (GDPR)",
-    "section4_text": "If you are in the EEA, you have the right to configure the use of non-essential cookies via the consent banner.",
+    "section4_text": "If you are in the EEA, please use the privacy and consent options provided by CrazyGames.",
     "section5_title": "5. Contact",
     "section5_text": "If you have any questions, you can contact us by sending an email to:"
   }

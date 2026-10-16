@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect, useMemo } from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Trophy, Globe, Flag } from "lucide-react"
+import { Trophy, Globe } from "lucide-react"
 import { useTranslations } from "@/hooks/use-translations"
 import { useLanguage } from "@/components/language-provider"
 
@@ -24,37 +24,8 @@ interface StartScreenProps {
   onStartGame: (language: "es" | "en") => void
   onLanguageChange?: (language: "es" | "en") => void
   isDictionaryLoading?: boolean
-  initialLanguage?: "es" | "en"
-  initialCountry?: string
-  onCountryChange?: (country: string) => void
-  ranking: RankingEntry[] // Ahora es obligatorio, ya no tiene valor por defecto aquí
+  ranking: RankingEntry[]
 }
-
-interface CountryOption {
-  code: string
-  name: string
-}
-
-const ALL_COUNTRY_CODES = [
-  "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS", "AT", "AU", "AW",
-  "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BL", "BM", "BN",
-  "BO", "BQ", "BR", "BS", "BT", "BV", "BW", "BY", "BZ", "CA", "CC", "CD", "CF", "CG",
-  "CH", "CI", "CK", "CL", "CM", "CN", "CO", "CR", "CU", "CV", "CW", "CX", "CY", "CZ",
-  "DE", "DJ", "DK", "DM", "DO", "DZ", "EC", "EE", "EG", "EH", "ER", "ES", "ET", "FI",
-  "FJ", "FK", "FM", "FO", "FR", "GA", "GB", "GD", "GE", "GF", "GG", "GH", "GI", "GL",
-  "GM", "GN", "GP", "GQ", "GR", "GS", "GT", "GU", "GW", "GY", "HK", "HM", "HN", "HR",
-  "HT", "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IQ", "IR", "IS", "IT", "JE", "JM",
-  "JO", "JP", "KE", "KG", "KH", "KI", "KM", "KN", "KP", "KR", "KW", "KY", "KZ", "LA",
-  "LB", "LC", "LI", "LK", "LR", "LS", "LT", "LU", "LV", "LY", "MA", "MC", "MD", "ME",
-  "MF", "MG", "MH", "MK", "ML", "MM", "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU",
-  "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI", "NL", "NO", "NP",
-  "NR", "NU", "NZ", "OM", "PA", "PE", "PF", "PG", "PH", "PK", "PL", "PM", "PN", "PR",
-  "PS", "PT", "PW", "PY", "QA", "RE", "RO", "RS", "RU", "RW", "SA", "SB", "SC", "SD",
-  "SE", "SG", "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SR", "SS", "ST", "SV",
-  "SX", "SY", "SZ", "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO",
-  "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "UM", "US", "UY", "UZ", "VA", "VC", "VE",
-  "VG", "VI", "VN", "VU", "WF", "WS", "YE", "YT", "ZA", "ZM", "ZW",
-] as const
 
 function countryCodeToFlag(code: string): string {
   if (code.length !== 2) return "🏳️"
@@ -64,57 +35,49 @@ function countryCodeToFlag(code: string): string {
   )
 }
 
-function buildCountryOptions(language: "es" | "en"): CountryOption[] {
-  const displayNames = new Intl.DisplayNames([language], { type: "region" })
-
-  return [...ALL_COUNTRY_CODES]
-    .map((code) => ({
-      code,
-      name: displayNames.of(code) ?? code,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name))
+export const DEMO_RANKINGS: Record<"es" | "en", RankingEntry[]> = {
+  es: [
+    { name: "María G.", country: "ES", score: 20 },
+    { name: "Carlos M.", country: "MX", score: 85 },
+    { name: "Ana P.", country: "AR", score: 50 },
+    { name: "Luis R.", country: "CO", score: 25 },
+    { name: "Sofía L.", country: "CL", score: 90 },
+    { name: "Diego H.", country: "PE", score: 60 },
+    { name: "Valentina C.", country: "UY", score: 35 },
+    { name: "Andrés F.", country: "VE", score: 10 },
+    { name: "Camila S.", country: "EC", score: 80 },
+    { name: "Martín B.", country: "ES", score: 50 },
+  ],
+  en: [
+    { name: "Olivia W.", country: "US", score: 30 },
+    { name: "Noah B.", country: "GB", score: 95 },
+    { name: "Amelia T.", country: "CA", score: 60 },
+    { name: "Liam K.", country: "AU", score: 30 },
+    { name: "Charlotte F.", country: "NZ", score: 30 },
+    { name: "James H.", country: "IE", score: 70 },
+    { name: "Emily S.", country: "US", score: 45 },
+    { name: "Henry L.", country: "GB", score: 20 },
+    { name: "Sophia R.", country: "CA", score: 90 },
+    { name: "Jack M.", country: "AU", score: 60 },
+  ],
 }
-
-// Exportamos un ranking inicial básico solo para que word-game.tsx lo use como fallback inicial
-export const INITIAL_RANKING: RankingEntry[] = Array.from({ length: 25 }, (_, i) => ({
-  name: "Cargando...",
-  country: "US",
-  score: 0,
-}))
 
 export function StartScreen({
   onStartGame,
   onLanguageChange,
   isDictionaryLoading,
-  initialLanguage = "es",
-  initialCountry = "ES",
-  onCountryChange,
-  ranking, // Ahora es obligatorio y siempre viene del padre
+  ranking,
 }: StartScreenProps) {
   const { lang, setLang } = useLanguage()
-  const [country, setCountry] = useState(initialCountry)
   const t = useTranslations(lang)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [autoScrollComplete, setAutoScrollComplete] = useState(false)
-  const countryOptions = useMemo(() => buildCountryOptions(lang), [lang])
-
-  const safeCountryValue = useMemo(() => {
-    const normalized = country.toUpperCase()
-    return countryOptions.some((option) => option.code === normalized)
-      ? normalized
-      : "US"
-  }, [country, countryOptions])
-
-  useEffect(() => {
-    setCountry(initialCountry)
-  }, [initialCountry])
 
   // Lógica del autoscroll
   useEffect(() => {
     const container = scrollRef.current
     if (!container) return
 
-    // Solo hacemos autoscroll si hay datos reales
     if (ranking.length === 0 || ranking[0].score === 0) return
 
     container.scrollTop = container.scrollHeight
@@ -143,7 +106,7 @@ export function StartScreen({
         cancelAnimationFrame(animationId)
       }
     }
-  }, [ranking]) // <-- Añadido `ranking` a las dependencias para que recalcule si la BBDD carga tarde
+  }, [ranking])
 
   return (
     <motion.div
@@ -186,27 +149,6 @@ export function StartScreen({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-2">
-          <Flag className="h-4 w-4 text-muted-foreground" />
-          <Select
-            value={safeCountryValue}
-            onValueChange={(value) => {
-              setCountry(value)
-              onCountryChange?.(value)
-            }}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder={t.startScreen.countryPlaceholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {countryOptions.map((option) => (
-                <SelectItem key={option.code} value={option.code}>
-                  {countryCodeToFlag(option.code)} {option.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       <Button
@@ -223,9 +165,12 @@ export function StartScreen({
       <div className="flex w-full max-w-md flex-1 flex-col overflow-hidden pb-4">
         <div className="mb-4 flex shrink-0 items-center gap-2">
           <Trophy className="h-5 w-5 text-yellow-500" />
-          <h2 className="text-lg font-semibold text-foreground">
-            {t.startScreen.globalTop}
-          </h2>
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              {t.startScreen.globalTop}
+            </h2>
+            <p className="text-xs text-muted-foreground">{t.startScreen.demoRankingNote}</p>
+          </div>
         </div>
 
         <div className="flex-1 overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm mb-4">

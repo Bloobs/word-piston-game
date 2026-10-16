@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useLanguage } from "@/components/language-provider"
 import { useGameState } from "@/components/game-state-provider"
+import { usePathname } from "next/navigation"
 import es from "@/messages/es.json"
 import en from "@/messages/en.json"
 import { Menu, X } from "lucide-react"
@@ -12,13 +13,20 @@ import { Button } from "@/components/ui/button"
 export function Navigation() {
   const { lang } = useLanguage()
   const { isGameActive } = useGameState()
+  const pathname = usePathname().replace(/\/+$/, "") || "/"
   const [isOpen, setIsOpen] = useState(false)
 
   const t = lang === "en" ? en.footer : es.footer
+  const homeHref = pathname === "/" ? "./" : "../"
+  const guideHref = pathname === "/"
+    ? "./guia-juego/"
+    : pathname === "/guia-juego"
+      ? "./"
+      : "../guia-juego/"
 
   const menuItems = [
-    { href: "/", label: t.home, icon: "🏠" },
-    { href: "/guia-juego", label: t.guide, icon: "📖" },
+    { href: homeHref, label: t.home, icon: "🏠" },
+    { href: guideHref, label: t.guide, icon: "📖" },
   ]
 
   // No mostrar el menú si hay una partida activa

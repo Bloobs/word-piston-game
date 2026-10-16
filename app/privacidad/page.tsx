@@ -21,7 +21,7 @@ export default function Privacidad() {
   return (
     <div className="min-h-screen bg-background text-foreground p-6 md:p-12 pt-24">
       <div className="max-w-3xl mx-auto space-y-6">
-        <Link href="/" className="text-primary hover:underline text-sm font-medium">
+        <Link href="../" className="text-primary hover:underline text-sm font-medium">
           &larr; {t.back_button}
         </Link>
         
@@ -38,20 +38,11 @@ export default function Privacidad() {
             <h2 className="text-xl font-semibold mb-2">{t.section2_title}</h2>
             <p>{t.section2_text}</p>
             <p className="mt-2">{t.section2_subtext}</p>
-            <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li><strong>Vercel Analytics:</strong> {t.section2_list1}</li>
-              <li><strong>Google AdSense:</strong> {t.section2_list2}</li>
-            </ul>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold mb-2">{t.section3_title}</h2>
             <p>{t.section3_text}</p>
-            <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li>{t.section3_list1}</li>
-              <li>{t.section3_list2}</li>
-              <li>{t.section3_list3} <a href="https://myadcenter.google.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{t.link_text}</a>.</li>
-            </ul>
           </section>
 
           <section>
